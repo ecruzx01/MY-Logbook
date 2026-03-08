@@ -10,8 +10,8 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #001f3f; padding: 10px; color: #333; margin: 0; }
         .card { background: white; padding: 20px; border-radius: 20px; max-width: 450px; margin: 10px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
-        .tab-container { display: flex; background: #002b55; border-radius: 12px; margin-bottom: 20px; padding: 5px; gap: 5px; }
-        .tab { flex: 1; text-align: center; padding: 10px 5px; color: white; cursor: pointer; border-radius: 8px; font-size: 11px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .tab-container { display: flex; background: #002b55; border-radius: 12px; margin-bottom: 20px; padding: 5px; gap: 5px; overflow-x: auto; }
+        .tab { flex: 1; text-align: center; padding: 10px 5px; color: white; cursor: pointer; border-radius: 8px; font-size: 10px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; min-width: 75px; }
         .tab.active { background: white; color: #001f3f; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -39,8 +39,9 @@
 <div class="card">
     <div class="tab-container">
         <div class="tab active" onclick="switchTab('logbook')">LOGBOOK</div>
-        <div class="tab" onclick="switchTab('auditor')">FUEL AUDITOR</div>
+        <div class="tab" onclick="switchTab('auditor')">AUDITOR</div>
         <div class="tab" onclick="switchTab('range')">⚓ RANGE</div>
+        <div class="tab" onclick="switchTab('service')">🛠️ SERVICE</div>
     </div>
 
     <div id="logbook" class="tab-content active">
@@ -64,7 +65,7 @@
                     <option value="Muelle">⚓ Muelle</option>
                     <option value="Groceries">🛒 Comida</option>
                     <option value="F&B">🍽️ F&B</option>
-                    <option value="Arreglos">🧰 Arreglos</option>
+                    <option value="Otros">⚙️ Otros</option>
                 </select>
             </div>
         </div>
@@ -112,7 +113,8 @@
             <span style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span>
         </div>
     </div>
-<div id="service" class="tab-content">
+
+    <div id="service" class="tab-content">
         <h2>Bitácora de Mantenimiento</h2>
         <div class="engine-box">
             <label>Fecha de Servicio:</label>
@@ -140,7 +142,7 @@
             <input type="number" id="sCosto" placeholder="0.00">
             
             <label>Escanear Factura/Recibo:</label>
-            <input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px;">
+            <input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #005a9c; cursor: pointer;">
             
             <button class="btn btn-blue" onclick="saveService()" id="btnService">💾 GUARDAR Y SUBIR RECIBO</button>
         </div>
@@ -152,7 +154,8 @@
             <p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p>
         </div>
     </div>
-    <div class="footer">Casco: RIY53032D415 | Fleet Command v9.9</div>
+
+    <div class="footer">Casco: RIY53032D415 | Fleet Command v10.0</div>
 </div>
 
 <div id="refModal">
@@ -177,15 +180,163 @@
 </div>
 
 <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyN3JElvd6ieZB3uo3h8mqOAkitrItgci6YUCVvAA2jhwQPqlWBOi84JsQZMDFb239s/exec';
+    let listaViajes = [];
     let serviceData = [];
 
-    // Llama al historial en Drive
+    // --- NAVEGACIÓN ---
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+        
+        // Cargar historial si entramos a SERVICE
+        if(tabId === 'service') {
+            loadServiceHistory();
+        }
+    }
+
+    function toggleModal(show) { document.getElementById('refModal').style.display = show ? 'block' : 'none'; }
+    function syncRPM() { document.getElementById('rpmS').value = document.getElementById('rpmP').value; calculateRange(); }
+
+    // --- RANGE PRO & AUDITOR ---
+    function calculateRange() {
+        const fuel = parseFloat(document.getElementById('fuelRange').value) || 0;
+        const totalBurn = (parseFloat(document.getElementById('gphP').value) || 0) + (parseFloat(document.getElementById('gphS').value) || 0);
+        const knots = parseFloat(document.getElementById('knotsRange').value) || 0;
+        if(totalBurn > 0 && knots > 0) {
+            const range = (fuel * 0.90) * (knots / totalBurn);
+            document.getElementById('resRange').innerText = Math.floor(range);
+        }
+    }
+
+    function calcFuel() {
+        const gal = parseFloat(document.getElementById('galReal').value) || 0;
+        const hrs = parseFloat(document.getElementById('hrsReal').value) || 0;
+        if(gal > 0 && hrs > 0) {
+            const real = gal / hrs;
+            document.getElementById('resGPH').innerText = real.toFixed(1);
+            const status = document.getElementById('fuelStatus');
+            const diff = real - 51;
+            if(Math.abs(diff) < 2) { status.innerText = "✅ RANGO OK (51 GPH)"; status.style.color = "#2ecc71"; }
+            else if(diff > 2) { status.innerText = "⚠️ ELEVADO (+" + diff.toFixed(1) + ")"; status.style.color = "#e74c3c"; }
+            else { status.innerText = "⚓ EFICIENTE"; status.style.color = "#3498db"; }
+        }
+    }
+
+    // --- LOGBOOK (VIAJES Y GASTOS) ---
+    async function cargarViajes(nombreASeleccionar = null) {
+        const select = document.getElementById('tripSelect');
+        select.innerHTML = '<option value="">-- Selecciona viaje --</option>';
+        try {
+            const response = await fetch(scriptURL);
+            listaViajes = await response.json();
+            let options = '<option value="">-- Selecciona viaje --</option>';
+            if (listaViajes && listaViajes.length > 0) {
+                listaViajes.forEach(v => { options += `<option value="${v.nombre}">${v.nombre}</option>`; });
+                select.innerHTML = options;
+            } else {
+                select.innerHTML = '<option value="">No hay viajes en Drive</option>';
+            }
+            if (nombreASeleccionar) { select.value = nombreASeleccionar; updateTotalDisplay(); }
+        } catch (e) { select.innerHTML = '<option value="">❌ Error de conexión</option>'; }
+    }
+
+    function updateTotalDisplay() {
+        const nombre = document.getElementById('tripSelect').value;
+        const viaje = listaViajes.find(v => v.nombre === nombre);
+        document.getElementById('displayTotal').innerText = viaje ? `$${viaje.total.toFixed(2)}` : "$0.00";
+    }
+
+    async function createNewTrip() {
+        const dest = document.getElementById('newTripDest').value;
+        const date = document.getElementById('newTripDate').value;
+        if(!dest || !date) return alert("Faltan datos");
+        const name = `${dest} - ${date}`;
+        await enviar({ type: "NUEVO_VIAJE", tripName: name, fecha: date });
+        document.getElementById('newTripDest').value = "";
+        cargarViajes(name);
+    }
+
+    async function addExpense() {
+        const name = document.getElementById('tripSelect').value;
+        const monto = parseFloat(document.getElementById('monto').value);
+        if(!name || isNaN(monto)) return alert("Selecciona viaje y pon monto");
+        await enviar({ type: "GASTO_DETALLE", tripName: name, categoria: document.getElementById('cat').value, monto: monto, fecha: document.getElementById('fechaGasto').value });
+        document.getElementById('monto').value = "";
+        setTimeout(() => cargarViajes(name), 1500);
+    }
+
+    // --- SERVICE LOG (MANTENIMIENTO Y RECIBOS) ---
+    async function saveService() {
+        const btn = document.getElementById('btnService');
+        btn.innerText = "⏳ ESCANEANDO Y SUBIENDO...";
+        btn.disabled = true;
+
+        const fileInput = document.getElementById('sFile');
+        let fileData = "", mimeType = "", filename = "";
+        
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            filename = file.name;
+            mimeType = file.type;
+            fileData = await getBase64(file);
+            fileData = fileData.split(',')[1]; 
+        }
+
+        const payload = {
+            type: "MANTENIMIENTO",
+            fecha: document.getElementById('sFecha').value,
+            vendor: document.getElementById('sVendor').value,
+            horas: document.getElementById('sHoras').value,
+            categoria: document.getElementById('sCat').value,
+            desc: document.getElementById('sDesc').value,
+            costo: parseFloat(document.getElementById('sCosto').value) || 0,
+            filename: filename,
+            mimeType: mimeType,
+            fileData: fileData
+        };
+
+        if(!payload.vendor || !payload.desc) {
+            alert("⚠️ Por favor llena al menos el Vendor y la Descripción.");
+            btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
+            btn.disabled = false;
+            return;
+        }
+
+        try {
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("✅ Servicio registrado y factura guardada en Drive.");
+            
+            document.getElementById('sVendor').value = "";
+            document.getElementById('sDesc').value = "";
+            document.getElementById('sCosto').value = "";
+            document.getElementById('sFile').value = "";
+            
+            loadServiceHistory(); // Recargar historial
+        } catch (e) {
+            alert("❌ Error de conexión al subir el recibo.");
+        }
+        
+        btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
+        btn.disabled = false;
+    }
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
     async function loadServiceHistory() {
         const historyDiv = document.getElementById('serviceHistory');
         historyDiv.innerHTML = "<p style='text-align:center;'>🔄 Buscando archivos en Drive...</p>";
         
         try {
-            // Añadimos ?action=getServices al final de tu URL de script
             const response = await fetch(scriptURL + "?action=getServices");
             serviceData = await response.json();
             renderServices(serviceData);
@@ -194,7 +345,6 @@
         }
     }
 
-    // Dibuja las tarjetas de servicio en la pantalla
     function renderServices(data) {
         const historyDiv = document.getElementById('serviceHistory');
         historyDiv.innerHTML = "";
@@ -205,7 +355,6 @@
         }
         
         data.forEach(s => {
-            // Si hay un recibo escaneado, crea el botón verde
             let btnHtml = (s.fileUrl && s.fileUrl !== "Sin recibo adjunto") 
                 ? `<button onclick="window.open('${s.fileUrl}', '_blank')" style="background:#2ecc71; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:8px;">📄 VER FACTURA</button>` 
                 : `<span style="font-size:11px; color:#aaa; font-style:italic;">Sin factura adjunta</span>`;
@@ -230,7 +379,6 @@
         });
     }
 
-    // Filtra el historial mientras escribes
     function filterServices() {
         const term = document.getElementById('searchService').value.toLowerCase();
         const filtered = serviceData.filter(s => 
@@ -240,179 +388,20 @@
         );
         renderServices(filtered);
     }
-    // --- LÓGICA DE MANTENIMIENTO Y RECIBOS ---
-    async function saveService() {
-        const btn = document.getElementById('btnService');
-        btn.innerText = "⏳ ESCANEANDO Y SUBIENDO...";
-        btn.disabled = true;
-
-        const fileInput = document.getElementById('sFile');
-        let fileData = "", mimeType = "", filename = "";
-        
-        // Convertir la foto a un formato que Google Drive pueda leer
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            filename = file.name;
-            mimeType = file.type;
-            fileData = await getBase64(file);
-            fileData = fileData.split(',')[1]; // Remover metadata inicial
-        }
-
-        const payload = {
-            type: "MANTENIMIENTO",
-            fecha: document.getElementById('sFecha').value,
-            vendor: document.getElementById('sVendor').value,
-            horas: document.getElementById('sHoras').value,
-            categoria: document.getElementById('sCat').value,
-            desc: document.getElementById('sDesc').value,
-            costo: parseFloat(document.getElementById('sCosto').value),
-            filename: filename,
-            mimeType: mimeType,
-            fileData: fileData
-        };
-
-        if(!payload.vendor || !payload.desc || isNaN(payload.costo)) {
-            alert("⚠️ Por favor llena al menos el Vendor, Descripción y Costo.");
-            btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
-            btn.disabled = false;
-            return;
-        }
-
-        try {
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("✅ Servicio registrado y factura guardada en el archivo.");
-            
-            // Limpiar campos después de guardar
-            document.getElementById('sVendor').value = "";
-            document.getElementById('sDesc').value = "";
-            document.getElementById('sCosto').value = "";
-            document.getElementById('sFile').value = "";
-        } catch (e) {
-            alert("❌ Error de conexión al subir el recibo.");
-        }
-        
-        btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
-        btn.disabled = false;
-    }
-
-    // Procesador de imágenes
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = error => reject(error);
-        });
-    }
-
-    // Asegúrate de añadir la pestaña nueva a tu menú superior HTML:
-    // <div class="tab" onclick="switchTab('service')">🛠️ SERVICE</div>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyZEmBTB7xtMUngAfG3RmfKSwNhrLibrbe1WejAmyUNwzfPolDiRKyeWyvGt2rCKsS1/exec';
-    let listaViajes = [];
-
-   function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        
-        // Cargar historial si entramos a SERVICE
-        if(tabId === 'service') {
-            loadServiceHistory();
-        }
-    }
-
-    function toggleModal(show) { document.getElementById('refModal').style.display = show ? 'block' : 'none'; }
-    function syncRPM() { document.getElementById('rpmS').value = document.getElementById('rpmP').value; calculateRange(); }
-
-    function calculateRange() {
-        const fuel = parseFloat(document.getElementById('fuelRange').value) || 0;
-        const totalBurn = (parseFloat(document.getElementById('gphP').value) || 0) + (parseFloat(document.getElementById('gphS').value) || 0);
-        const knots = parseFloat(document.getElementById('knotsRange').value) || 0;
-        if(totalBurn > 0 && knots > 0) {
-            // Formula: (Combustible * 0.90 de seguridad) / ConsumoTotal * Velocidad
-            const range = (fuel * 0.90) * (knots / totalBurn);
-            document.getElementById('resRange').innerText = Math.floor(range);
-        }
-    }
-
-    async function cargarViajes(nombreASeleccionar = null) {
-        const select = document.getElementById('tripSelect');
-        select.innerHTML = '<option value="">-- Selecciona viaje --</option>';
-        
-        try {
-            const response = await fetch(scriptURL);
-            listaViajes = await response.json();
-            
-            let options = '<option value="">-- Selecciona viaje --</option>';
-            if (listaViajes && listaViajes.length > 0) {
-                listaViajes.forEach(v => {
-                    options += `<option value="${v.nombre}">${v.nombre}</option>`;
-                });
-                select.innerHTML = options;
-            } else {
-                select.innerHTML = '<option value="">No hay viajes en Drive</option>';
-            }
-
-            if (nombreASeleccionar) { 
-                select.value = nombreASeleccionar; 
-                updateTotalDisplay(); 
-            }
-        } catch (e) { 
-            console.error("Error Drive", e);
-            select.innerHTML = '<option value="">❌ Error de conexión</option>';
-        }
-    }
-
-    function updateTotalDisplay() {
-        const nombre = document.getElementById('tripSelect').value;
-        const viaje = listaViajes.find(v => v.nombre === nombre);
-        document.getElementById('displayTotal').innerText = viaje ? `$${viaje.total.toFixed(2)}` : "$0.00";
-    }
-
-    async function createNewTrip() {
-        const dest = document.getElementById('newTripDest').value;
-        const date = document.getElementById('newTripDate').value;
-        if(!dest || !date) return alert("Faltan datos");
-        const name = `${dest} - ${date}`;
-        await enviar({ type: "NUEVO_VIAJE", tripName: name, fecha: date });
-        document.getElementById('newTripDest').value = "";
-        cargarViajes(name);
-    }
-
-    async function addExpense() {
-        const name = document.getElementById('tripSelect').value;
-        const monto = parseFloat(document.getElementById('monto').value);
-        if(!name || isNaN(monto)) return alert("Selecciona viaje y pon monto");
-        await enviar({ type: "GASTO_DETALLE", tripName: name, categoria: document.getElementById('cat').value, monto: monto, fecha: new Date().toISOString().split('T')[0] });
-        document.getElementById('monto').value = "";
-        setTimeout(() => cargarViajes(name), 1500);
-    }
-
-    function calcFuel() {
-        const gal = parseFloat(document.getElementById('galReal').value) || 0;
-        const hrs = parseFloat(document.getElementById('hrsReal').value) || 0;
-        if(gal > 0 && hrs > 0) {
-            const real = gal / hrs;
-            document.getElementById('resGPH').innerText = real.toFixed(1);
-            const status = document.getElementById('fuelStatus');
-            const diff = real - 51;
-            if(Math.abs(diff) < 2) { status.innerText = "✅ RANGO OK (51 GPH)"; status.style.color = "#2ecc71"; }
-            else if(diff > 2) { status.innerText = "⚠️ ELEVADO (+" + diff.toFixed(1) + ")"; status.style.color = "#e74c3c"; }
-            else { status.innerText = "⚓ EFICIENTE"; status.style.color = "#3498db"; }
-        }
-    }
 
     async function enviar(data) {
         try {
             await fetch(scriptURL, { method: 'POST', mode: 'no-cors', cache: 'no-cache', body: JSON.stringify(data) });
             alert("✅ Drive Actualizado");
-        } catch (e) { alert("❌ Error de comunicación"); }
+        } catch (e) { alert("❌ Error"); }
     }
 
+    // Inicialización al cargar la ventana
     window.onload = function() {
-        document.getElementById('newTripDate').value = new Date().toISOString().split('T')[0];
-        document.getElementById('fechaGasto').value = new Date().toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('newTripDate').value = today;
+        document.getElementById('fechaGasto').value = today;
+        document.getElementById('sFecha').value = today;
         cargarViajes();
     };
 </script>
