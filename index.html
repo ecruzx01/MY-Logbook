@@ -112,7 +112,46 @@
             <span style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span>
         </div>
     </div>
+<div id="service" class="tab-content">
+        <h2>Bitácora de Mantenimiento</h2>
+        <div class="engine-box">
+            <label>Fecha de Servicio:</label>
+            <input type="date" id="sFecha">
+            
+            <label>Contratista / Vendor:</label>
+            <input type="text" id="sVendor" placeholder="Ej: Marina, Electromecánico...">
+            
+            <label>Horas de Motor:</label>
+            <input type="number" id="sHoras" placeholder="Horas al momento del servicio">
+            
+            <label>Sistema / Categoría:</label>
+            <select id="sCat">
+                <option value="Motores">⚙️ Motores Principales</option>
+                <option value="Generador">⚡ Generador</option>
+                <option value="Fondo">🚤 Limpieza de Fondo/Zincs</option>
+                <option value="Electrónica">📡 Electrónica / Navegación</option>
+                <option value="Otros">🔧 Otros Servicios</option>
+            </select>
+            
+            <label>Descripción del Trabajo:</label>
+            <input type="text" id="sDesc" placeholder="Qué se reparó, cambió o mantuvo">
+            
+            <label>Costo Total ($):</label>
+            <input type="number" id="sCosto" placeholder="0.00">
+            
+            <label>Escanear Factura/Recibo:</label>
+            <input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px;">
+            
+            <button class="btn btn-blue" onclick="saveService()" id="btnService">💾 GUARDAR Y SUBIR RECIBO</button>
+        </div>
 
+        <div class="section-header">Archivo de Mantenimiento</div>
+        <input type="text" id="searchService" placeholder="🔍 Buscar vendor, repuesto o sistema..." onkeyup="filterServices()" style="margin-bottom: 10px; font-size: 14px;">
+        
+        <div id="serviceHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;">
+            <p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p>
+        </div>
+    </div>
     <div class="footer">Casco: RIY53032D415 | Fleet Command v9.9</div>
 </div>
 
@@ -138,6 +177,73 @@
 </div>
 
 <script>
+    // --- LÓGICA DE MANTENIMIENTO Y RECIBOS ---
+    async function saveService() {
+        const btn = document.getElementById('btnService');
+        btn.innerText = "⏳ ESCANEANDO Y SUBIENDO...";
+        btn.disabled = true;
+
+        const fileInput = document.getElementById('sFile');
+        let fileData = "", mimeType = "", filename = "";
+        
+        // Convertir la foto a un formato que Google Drive pueda leer
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            filename = file.name;
+            mimeType = file.type;
+            fileData = await getBase64(file);
+            fileData = fileData.split(',')[1]; // Remover metadata inicial
+        }
+
+        const payload = {
+            type: "MANTENIMIENTO",
+            fecha: document.getElementById('sFecha').value,
+            vendor: document.getElementById('sVendor').value,
+            horas: document.getElementById('sHoras').value,
+            categoria: document.getElementById('sCat').value,
+            desc: document.getElementById('sDesc').value,
+            costo: parseFloat(document.getElementById('sCosto').value),
+            filename: filename,
+            mimeType: mimeType,
+            fileData: fileData
+        };
+
+        if(!payload.vendor || !payload.desc || isNaN(payload.costo)) {
+            alert("⚠️ Por favor llena al menos el Vendor, Descripción y Costo.");
+            btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
+            btn.disabled = false;
+            return;
+        }
+
+        try {
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            alert("✅ Servicio registrado y factura guardada en el archivo.");
+            
+            // Limpiar campos después de guardar
+            document.getElementById('sVendor').value = "";
+            document.getElementById('sDesc').value = "";
+            document.getElementById('sCosto').value = "";
+            document.getElementById('sFile').value = "";
+        } catch (e) {
+            alert("❌ Error de conexión al subir el recibo.");
+        }
+        
+        btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
+        btn.disabled = false;
+    }
+
+    // Procesador de imágenes
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    }
+
+    // Asegúrate de añadir la pestaña nueva a tu menú superior HTML:
+    // <div class="tab" onclick="switchTab('service')">🛠️ SERVICE</div>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyZEmBTB7xtMUngAfG3RmfKSwNhrLibrbe1WejAmyUNwzfPolDiRKyeWyvGt2rCKsS1/exec';
     let listaViajes = [];
 
