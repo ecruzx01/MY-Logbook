@@ -310,11 +310,16 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyZEmBTB7xtMUngAfG3RmfKSwNhrLibrbe1WejAmyUNwzfPolDiRKyeWyvGt2rCKsS1/exec';
     let listaViajes = [];
 
-    function switchTab(tabId) {
+   function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         event.currentTarget.classList.add('active');
+        
+        // Cargar historial si entramos a SERVICE
+        if(tabId === 'service') {
+            loadServiceHistory();
+        }
     }
 
     function toggleModal(show) { document.getElementById('refModal').style.display = show ? 'block' : 'none'; }
