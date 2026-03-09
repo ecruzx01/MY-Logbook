@@ -268,63 +268,72 @@
         setTimeout(() => cargarViajes(name), 1500);
     }
 
-    // --- SERVICE LOG (MANTENIMIENTO Y RECIBOS) ---
+   // --- SERVICE LOG (VERSIÓN COMPRESIÓN FORZADA) ---
     async function saveService() {
         const btn = document.getElementById('btnService');
-        btn.innerText = "⏳ ESCANEANDO Y SUBIENDO...";
+        btn.innerText = "⏳ INICIANDO...";
         btn.disabled = true;
 
         const fileInput = document.getElementById('sFile');
         let fileData = "", mimeType = "", filename = "";
         
-        if (fileInput.files.length > 0) {
-            const file = fileInput.files[0];
-            filename = file.name;
-            mimeType = file.type;
-            fileData = await getBase64(file);
-            fileData = fileData.split(',')[1]; 
-        }
-
-        const payload = {
-            type: "MANTENIMIENTO",
-            fecha: document.getElementById('sFecha').value,
-            vendor: document.getElementById('sVendor').value,
-            horas: document.getElementById('sHoras').value,
-            categoria: document.getElementById('sCat').value,
-            desc: document.getElementById('sDesc').value,
-            costo: parseFloat(document.getElementById('sCosto').value) || 0,
-            filename: filename,
-            mimeType: mimeType,
-            fileData: fileData
-        };
-
-        if(!payload.vendor || !payload.desc) {
-            alert("⚠️ Por favor llena al menos el Vendor y la Descripción.");
-            btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
-            btn.disabled = false;
-            return;
-        }
-
         try {
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-            alert("✅ Servicio registrado y factura guardada en Drive.");
+            if (fileInput.files.length > 0) {
+                btn.innerText = "📸 COMPRIMIENDO RECIBO...";
+                const file = fileInput.files[0];
+                filename = file.name ? file.name : "factura.jpg";
+                mimeType = "image/jpeg"; // Forzamos formato ligero
+                
+                const base64Full = await compressImage(file);
+                fileData = base64Full.split(',')[1]; 
+            }
+
+            btn.innerText = "⏳ SUBIENDO A DRIVE...";
+            const payload = {
+                type: "MANTENIMIENTO",
+                fecha: document.getElementById('sFecha').value,
+                vendor: document.getElementById('sVendor').value,
+                horas: document.getElementById('sHoras').value,
+                categoria: document.getElementById('sCat').value,
+                desc: document.getElementById('sDesc').value,
+                costo: parseFloat(document.getElementById('sCosto').value) || 0,
+                filename: filename,
+                mimeType: mimeType,
+                fileData: fileData
+            };
+
+            if(!payload.vendor || !payload.desc) {
+                alert("⚠️ Por favor llena al menos el Vendor y la Descripción.");
+                btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
+                btn.disabled = false;
+                return;
+            }
+
+            await fetch(scriptURL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify(payload) 
+            });
             
+            alert("✅ Servicio y recibo registrados en Drive.");
+            
+            // Limpiar campos
             document.getElementById('sVendor').value = "";
             document.getElementById('sDesc').value = "";
             document.getElementById('sCosto').value = "";
             document.getElementById('sFile').value = "";
             
-            loadServiceHistory(); // Recargar historial
+            loadServiceHistory(); 
         } catch (e) {
-            alert("❌ Error de conexión al subir el recibo.");
+            alert("❌ Error al procesar la imagen. Intenta alejar un poco la cámara.");
         }
         
         btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
         btn.disabled = false;
     }
 
-// Procesador y Compresor de Imágenes
-    function getBase64(file) {
+    // El motor de compresión
+    function compressImage(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -333,12 +342,12 @@
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800; // Reduce la resolución para que Google no se tranque
+                    const MAX_WIDTH = 800; // Tamaño ideal para leer números en facturas
                     let width = img.width;
                     let height = img.height;
 
                     if (width > MAX_WIDTH) {
-                        height *= MAX_WIDTH / width;
+                        height = Math.floor(height * (MAX_WIDTH / width));
                         width = MAX_WIDTH;
                     }
                     canvas.width = width;
@@ -346,14 +355,14 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Devuelve la imagen comprimida
-                    resolve(canvas.toDataURL(file.type, 0.7)); 
+                    // Comprime a JPEG al 50% de calidad
+                    resolve(canvas.toDataURL('image/jpeg', 0.5)); 
                 };
+                img.onerror = (e) => reject(e);
             };
-            reader.onerror = error => reject(error);
+            reader.onerror = (e) => reject(e);
         });
     }
-
     async function loadServiceHistory() {
         const historyDiv = document.getElementById('serviceHistory');
         historyDiv.innerHTML = "<p style='text-align:center;'>🔄 Buscando archivos en Drive...</p>";
