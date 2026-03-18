@@ -70,8 +70,12 @@
             </div>
         </div>
         <label>Monto ($):</label>
-        <input type="number" id="monto" placeholder="0.00" inputmode="decimal">
-        <button class="btn btn-orange" onclick="addExpense()">➕ REGISTRAR PARTIDA</button>
+        <input type="number" id="monto" placeholder="0.00" inputmode="decimal" style="margin-bottom: 10px;">
+        
+        <label>Escanear Recibo (Opcional):</label>
+        <input type="file" id="gastoFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #e67e22; cursor: pointer; width: 100%; box-sizing: border-box; margin-bottom: 10px;">
+        
+        <button class="btn btn-orange" id="btnGasto" onclick="addExpense()">➕ REGISTRAR PARTIDA</button>
 
         <div style="background: #eef6ff; padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid #004080; text-align: center;">
             <span style="font-size:12px; font-weight:bold; color:#004080;">TOTAL ACUMULADO:</span>
