@@ -263,15 +263,63 @@
         cargarViajes(name);
     }
 
-    async function addExpense() {
+async function addExpense() {
+        const btn = document.getElementById('btnGasto');
         const name = document.getElementById('tripSelect').value;
         const monto = parseFloat(document.getElementById('monto').value);
-        if(!name || isNaN(monto)) return alert("Selecciona viaje y pon monto");
-        await enviar({ type: "GASTO_DETALLE", tripName: name, categoria: document.getElementById('cat').value, monto: monto, fecha: document.getElementById('fechaGasto').value });
-        document.getElementById('monto').value = "";
-        setTimeout(() => cargarViajes(name), 1500);
-    }
+        const fecha = document.getElementById('fechaGasto').value;
+        const cat = document.getElementById('cat').value;
 
+        if(!name || isNaN(monto)) return alert("⚠️ Selecciona el viaje y pon el monto.");
+
+        btn.innerText = "⏳ PROCESANDO...";
+        btn.disabled = true;
+
+        const fileInput = document.getElementById('gastoFile');
+        let fileData = "", mimeType = "", filename = "";
+
+        try {
+            if (fileInput && fileInput.files.length > 0) {
+                btn.innerText = "📸 ACHICANDO FOTO...";
+                const file = fileInput.files[0];
+                filename = file.name ? file.name : "recibo_gasto.jpg";
+                mimeType = "image/jpeg";
+                const base64Full = await compressImage(file);
+                fileData = base64Full.split(',')[1]; 
+            }
+
+            btn.innerText = "⏳ ENVIANDO A DRIVE...";
+            const payload = { 
+                type: "GASTO_DETALLE", 
+                tripName: name, 
+                categoria: cat, 
+                monto: monto, 
+                fecha: fecha,
+                filename: filename,
+                mimeType: mimeType,
+                fileData: fileData
+            };
+
+            await fetch(scriptURL, { 
+                method: 'POST', 
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload) 
+            });
+
+            alert("✅ Gasto registrado con éxito.");
+            document.getElementById('monto').value = "";
+            if(fileInput) fileInput.value = ""; 
+            
+            setTimeout(() => cargarViajes(name), 1500);
+
+        } catch (e) {
+            alert("❌ Error: " + e.message);
+        }
+
+        btn.innerText = "➕ REGISTRAR PARTIDA";
+        btn.disabled = false;
+    }
 // --- SERVICE LOG: VERSIÓN DE DIAGNÓSTICO Y ALTA COMPRESIÓN ---
     async function saveService() {
         const btn = document.getElementById('btnService');
