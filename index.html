@@ -254,16 +254,24 @@
     function syncRPM() { document.getElementById('rpmS').value = document.getElementById('rpmP').value; calculateRange(); }
 
     // --- RANGE PRO & AUDITOR ---
-    function calculateRange() {
+function calculateRange() {
         const fuel = parseFloat(document.getElementById('fuelRange').value) || 0;
+        const reservePct = parseFloat(document.getElementById('reservePct').value) || 0;
         const totalBurn = (parseFloat(document.getElementById('gphP').value) || 0) + (parseFloat(document.getElementById('gphS').value) || 0);
         const knots = parseFloat(document.getElementById('knotsRange').value) || 0;
+        
+        // Actualiza el texto verde de abajo para que diga la reserva que elegiste
+        document.getElementById('resText').innerText = `MILLAS (${reservePct}% RES)`;
+
         if(totalBurn > 0 && knots > 0) {
-            const range = (fuel * 0.90) * (knots / totalBurn);
+            // Calcula usando el % de reserva que el usuario escribió
+            const usableFuel = fuel * (1 - (reservePct / 100));
+            const range = usableFuel * (knots / totalBurn);
             document.getElementById('resRange').innerText = Math.floor(range);
+        } else {
+            document.getElementById('resRange').innerText = "0";
         }
     }
-
     function calcFuel() {
         const gal = parseFloat(document.getElementById('galReal').value) || 0;
         const hrs = parseFloat(document.getElementById('hrsReal').value) || 0;
