@@ -99,17 +99,11 @@
 <div id="range" class="tab-content">
         <h2>Safe Range Pro</h2>
         
+        <div class="section-header">1. Rango Actual (En Vivo)</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div>
-                <label>Diesel Actual (Gal):</label>
-                <input type="number" id="fuelRange" placeholder="Max: 687" oninput="calculateRange()">
-            </div>
-            <div>
-                <label>Reserva (%):</label>
-                <input type="number" id="reservePct" value="10" oninput="calculateRange()">
-            </div>
+            <div><label>Diesel (Gal):</label><input type="number" id="fuelRange" placeholder="Max: 687" oninput="calculateRange()"></div>
+            <div><label>Reserva (%):</label><input type="number" id="reservePct" value="10" oninput="calculateRange()"></div>
         </div>
-
         <div class="engine-grid">
             <div class="engine-box">
                 <span style="font-size:9px; font-weight:bold; color:#004080; display:block; text-align:center;">PORT (MASTER)</span>
@@ -122,15 +116,37 @@
                 <label>GPH:</label><input type="number" id="gphS" oninput="calculateRange()">
             </div>
         </div>
-        
         <label>Velocidad GPS (Kts):</label><input type="number" id="knotsRange" oninput="calculateRange()">
-        
         <div class="result-box">
             <span id="resRange" class="result-val" style="font-size:42px;">0</span>
             <span id="resText" style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span>
         </div>
 
-        <div class="section-header" style="margin-top: 20px;">Performance Aquila 46</div>
+        <div class="section-header" style="margin-top: 20px; border-left-color: #e67e22; color: #e67e22; background: #fff3e0;">2. Smart Router (Optimizador)</div>
+        <div style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 10px; border: 2px solid #e67e22;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                <div><label style="font-size: 9px;">DISTANCIA (NM)</label><input type="number" id="routeDist" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+                <div><label style="font-size: 9px;">DIESEL DISP.</label><input type="number" id="routeFuel" value="687" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+                <div><label style="font-size: 9px;">RESERVA (%)</label><input type="number" id="routeRes" value="20" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; text-align: center;">
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
+                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">RPM IDEAL</span>
+                    <span id="optRPM" style="font-size: 18px; font-weight: bold; color: #004080;">0</span>
+                </div>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
+                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span>
+                    <span id="optKnots" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 Kt</span>
+                </div>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
+                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span>
+                    <span id="optTime" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 h</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header" style="margin-top: 20px;">Performance Oficial Aquila 46</div>
         <div style="background: white; border-radius: 10px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; max-height: 250px; overflow-y: auto;">
             <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                 <thead>
@@ -139,20 +155,20 @@
                     </tr>
                 </thead>
                 <tbody style="text-align:center;">
-                    <tr><td>650</td><td>3.2</td><td>0.6</td><td>3641</td></tr>
-                    <tr style="background:#f8fafc;"><td>750</td><td>3.9</td><td>0.9</td><td>3160</td></tr>
-                    <tr><td>1000</td><td>5.2</td><td>1.5</td><td>2473</td></tr>
-                    <tr style="background:#f8fafc;"><td>1250</td><td>6.3</td><td>2.7</td><td>1580</td></tr>
-                    <tr><td>1500</td><td>7.4</td><td>4.5</td><td>1099</td></tr>
-                    <tr style="background:#f8fafc;"><td>1750</td><td>8.2</td><td>6.6</td><td>824</td></tr>
-                    <tr><td>2000</td><td>9.6</td><td>9.5</td><td>687</td></tr>
-                    <tr style="background:#f8fafc;"><td>2250</td><td>10.1</td><td>13.0</td><td>550</td></tr>
+                    <tr><td>650</td><td>3.2</td><td>0.6</td><td>3664</td></tr>
+                    <tr style="background:#f8fafc;"><td>750</td><td>3.9</td><td>0.9</td><td>2977</td></tr>
+                    <tr><td>1000</td><td>5.2</td><td>1.5</td><td>2381</td></tr>
+                    <tr style="background:#f8fafc;"><td>1250</td><td>6.3</td><td>2.7</td><td>1603</td></tr>
+                    <tr><td>1500</td><td>7.4</td><td>4.5</td><td>1129</td></tr>
+                    <tr style="background:#f8fafc;"><td>1750</td><td>8.2</td><td>6.6</td><td>853</td></tr>
+                    <tr><td>2000</td><td>9.6</td><td>9.5</td><td>694</td></tr>
+                    <tr style="background:#f8fafc;"><td>2250</td><td>10.1</td><td>13.0</td><td>533</td></tr>
                     <tr><td>2500</td><td>10.8</td><td>18.0</td><td>412</td></tr>
-                    <tr style="background:#f8fafc;"><td>2750</td><td>12.1</td><td>22.5</td><td>343</td></tr>
-                    <tr><td>3000</td><td>14.8</td><td>29.5</td><td>343</td></tr>
-                    <tr style="background:#f8fafc;"><td>3250</td><td>17.3</td><td>34.5</td><td>343</td></tr>
-                    <tr><td>3500</td><td>19.5</td><td>42.5</td><td>343</td></tr>
-                    <tr style="background:#eef6ff; font-weight:bold; color:#d9534f;"><td>3650</td><td>20.6</td><td>49.0</td><td>275</td></tr>
+                    <tr style="background:#f8fafc;"><td>2750</td><td>12.1</td><td>22.5</td><td>369</td></tr>
+                    <tr><td>3000</td><td>14.8</td><td>29.5</td><td>344</td></tr>
+                    <tr style="background:#f8fafc;"><td>3250</td><td>17.3</td><td>34.5</td><td>344</td></tr>
+                    <tr><td>3500</td><td>19.5</td><td>42.5</td><td>315</td></tr>
+                    <tr style="background:#eef6ff; font-weight:bold; color:#d9534f;"><td>3650</td><td>20.6</td><td>49.0</td><td>288</td></tr>
                 </tbody>
             </table>
         </div>
@@ -270,6 +286,66 @@ function calculateRange() {
             document.getElementById('resRange').innerText = Math.floor(range);
         } else {
             document.getElementById('resRange').innerText = "0";
+        }
+    }
+    // Base de datos oficial del Aquila 46 (Volvo Penta 480s)
+    const aquilaData = [
+        { rpm: 650, knots: 3.2, gph: 0.6 },
+        { rpm: 750, knots: 3.9, gph: 0.9 },
+        { rpm: 1000, knots: 5.2, gph: 1.5 },
+        { rpm: 1250, knots: 6.3, gph: 2.7 },
+        { rpm: 1500, knots: 7.4, gph: 4.5 },
+        { rpm: 1750, knots: 8.2, gph: 6.6 },
+        { rpm: 2000, knots: 9.6, gph: 9.5 },
+        { rpm: 2250, knots: 10.1, gph: 13.0 },
+        { rpm: 2500, knots: 10.8, gph: 18.0 },
+        { rpm: 2750, knots: 12.1, gph: 22.5 },
+        { rpm: 3000, knots: 14.8, gph: 29.5 },
+        { rpm: 3250, knots: 17.3, gph: 34.5 },
+        { rpm: 3500, knots: 19.5, gph: 42.5 },
+        { rpm: 3650, knots: 20.6, gph: 49.0 }
+    ];
+
+    function calculateSmartRoute() {
+        const dist = parseFloat(document.getElementById('routeDist').value) || 0;
+        const fuel = parseFloat(document.getElementById('routeFuel').value) || 0;
+        const resPct = parseFloat(document.getElementById('routeRes').value) || 0;
+
+        if(dist === 0 || fuel === 0) return;
+
+        // Calcula el diésel utilizable quitando la reserva
+        const usableFuel = fuel * (1 - (resPct / 100));
+        
+        // Calcula la eficiencia mínima que el barco necesita tener para lograr el viaje
+        const requiredNMPG = dist / usableFuel;
+
+        let bestSetting = null;
+
+        // Escanea la tabla desde la velocidad más RÁPIDA (3650 RPM) hacia abajo
+        for (let i = aquilaData.length - 1; i >= 0; i--) {
+            // Calcula la eficiencia real exacta (Knots / GPH)
+            let actualNMPG = aquilaData[i].knots / aquilaData[i].gph;
+            
+            // Si la eficiencia del barco en ese RPM es mayor o igual a la requerida, ¡es el ganador!
+            if (actualNMPG >= requiredNMPG) {
+                bestSetting = aquilaData[i];
+                break;
+            }
+        }
+
+        // Si encontró una configuración segura, la muestra en pantalla
+        if (bestSetting) {
+            const timeHours = dist / bestSetting.knots;
+            document.getElementById('optRPM').innerText = bestSetting.rpm;
+            document.getElementById('optKnots').innerText = bestSetting.knots.toFixed(1) + " Kt";
+            document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
+            document.getElementById('optRPM').style.color = "#004080";
+        } else {
+            // Si ninguna velocidad da el rango, tira una alerta visual
+            document.getElementById('optRPM').innerText = "⚠️";
+            document.getElementById('optKnots').innerText = "SIN RANGO";
+            document.getElementById('optTime').innerText = "Falta Diesel";
+            document.getElementById('optRPM').style.color = "#e74c3c";
         }
     }
     function calcFuel() {
