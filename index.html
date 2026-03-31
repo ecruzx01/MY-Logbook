@@ -397,15 +397,63 @@
         historyDiv.innerHTML = html;
     }
 
+// --- NUEVO SISTEMA DE VIAJES OFFLINE ---
+    function llenarDropdownViajes(nombreASeleccionar) {
+        const select = document.getElementById('tripSelect');
+        let options = '<option value="">-- Selecciona viaje --</option>';
+        if (listaViajes && listaViajes.length > 0) {
+            listaViajes.forEach(v => { options += `<option value="${v.nombre}">${v.nombre}</option>`; });
+            select.innerHTML = options;
+        } else { select.innerHTML = '<option value="">No hay viajes</option>'; }
+        if (nombreASeleccionar) { select.value = nombreASeleccionar; updateTotalDisplay(); }
+    }
+
+    async function cargarViajes(nombreASeleccionar = null) {
+        const select = document.getElementById('tripSelect');
+        select.innerHTML = '<option value="">-- Cargando... --</option>';
+        
+        // Si no hay señal, carga los viajes guardados en la memoria del teléfono
+        if (!navigator.onLine) {
+            listaViajes = JSON.parse(localStorage.getItem('aquilaTrips')) || [];
+            llenarDropdownViajes(nombreASeleccionar);
+            return;
+        }
+
+        try {
+            const response = await fetch(scriptURL);
+            listaViajes = await response.json();
+            // Guarda una copia de seguridad en el teléfono para cuando pierdas la señal
+            localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes));
+            llenarDropdownViajes(nombreASeleccionar);
+        } catch (e) {
+            // Si falla el internet a mitad de carga, usa la memoria
+            listaViajes = JSON.parse(localStorage.getItem('aquilaTrips')) || [];
+            llenarDropdownViajes(nombreASeleccionar);
+        }
+    }
+
     async function createNewTrip() {
-        if (!navigator.onLine) return alert("⚠️ Necesitas internet para crear un viaje nuevo.");
         const dest = document.getElementById('newTripDest').value;
         const date = document.getElementById('newTripDate').value;
         if(!dest || !date) return alert("Faltan datos");
         const name = `${dest} - ${date}`;
-        await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ type: "NUEVO_VIAJE", tripName: name, fecha: date }) });
+        
+        const payload = { type: "NUEVO_VIAJE", tripName: name, fecha: date };
+        
+        // Añade el viaje visualmente y a la memoria del teléfono de inmediato
+        listaViajes.push({ nombre: name, total: 0, gastos: [] });
+        localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes));
+        
+        if (!navigator.onLine) {
+            saveToOutbox(payload);
+            alert("⚠️ Viaje creado en modo Offline. Se subirá a tu Drive cuando recuperes la señal.");
+        } else {
+            // Si hay internet, lo sube de una vez
+            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        }
+        
         document.getElementById('newTripDest').value = "";
-        cargarViajes(name);
+        llenarDropdownViajes(name);
     }
 
     async function addExpense() {
