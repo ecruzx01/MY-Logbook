@@ -324,10 +324,14 @@
         { rpm: 3650, knots: 20.6, gph: 49.0 }
     ];
 
-    function calculateSmartRoute() {
+function calculateSmartRoute() {
         const dist = parseFloat(document.getElementById('routeDist').value) || 0;
         const fuel = parseFloat(document.getElementById('routeFuel').value) || 0;
         const resPct = parseFloat(document.getElementById('routeRes').value) || 0;
+        
+        const arrDate = document.getElementById('routeArrDate').value;
+        const arrTime = document.getElementById('routeArrTime').value;
+
         if(dist === 0 || fuel === 0) return;
 
         const usableFuel = fuel * (1 - (resPct / 100));
@@ -345,14 +349,26 @@
             document.getElementById('optKnots').innerText = bestSetting.knots.toFixed(1) + " Kt";
             document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
             document.getElementById('optRPM').style.color = "#004080";
+
+            if (arrDate && arrTime) {
+                // Combina la fecha y hora, y le resta el tiempo de viaje en milisegundos
+                const arrivalDateObj = new Date(`${arrDate}T${arrTime}`);
+                const departureDateObj = new Date(arrivalDateObj.getTime() - (timeHours * 60 * 60 * 1000));
+                
+                const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('optDeparture').innerText = departureDateObj.toLocaleString('es-ES', options).toUpperCase();
+            } else {
+                document.getElementById('optDeparture').innerText = "Pon fecha/hora de llegada";
+            }
+
         } else {
             document.getElementById('optRPM').innerText = "⚠️";
             document.getElementById('optKnots').innerText = "SIN RANGO";
             document.getElementById('optTime').innerText = "Falta Diesel";
+            document.getElementById('optDeparture').innerText = "--";
             document.getElementById('optRPM').style.color = "#e74c3c";
         }
     }
-
     function calcFuel() {
         const gal = parseFloat(document.getElementById('galReal').value) || 0;
         const hrs = parseFloat(document.getElementById('hrsReal').value) || 0;
