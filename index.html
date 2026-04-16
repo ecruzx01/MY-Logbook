@@ -63,21 +63,15 @@
             <div>
                 <label>Categoría:</label>
                 <select id="cat">
-                    <option value="Combustible">⛽ Diesel</option>
-                    <option value="Muelle">⚓ Muelle</option>
-                    <option value="Groceries">🛒 Comida</option>
-                    <option value="F&B">🍽️ F&B</option>
-                    <option value="Otros">⚙️ Otros</option>
+                    <option value="Combustible">⛽ Diesel</option><option value="Muelle">⚓ Muelle</option>
+                    <option value="Groceries">🛒 Comida</option><option value="F&B">🍽️ F&B</option><option value="Otros">⚙️ Otros</option>
                 </select>
             </div>
         </div>
         
-        <label>Monto ($):</label>
-        <input type="number" id="monto" placeholder="0.00" inputmode="decimal" style="margin-bottom: 10px;">
-        
+        <label>Monto ($):</label><input type="number" id="monto" placeholder="0.00" inputmode="decimal" style="margin-bottom: 10px;">
         <label>Escanear Recibo (Opcional):</label>
         <input type="file" id="gastoFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #e67e22; cursor: pointer; width: 100%; box-sizing: border-box; margin-bottom: 10px;">
-        
         <button class="btn btn-orange" id="btnGasto" onclick="addExpense()">➕ REGISTRAR PARTIDA</button>
 
         <div style="background: #eef6ff; padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid #004080; text-align: center;">
@@ -96,11 +90,7 @@
         <p style="text-align:center; font-size:12px; color:#666;">Basado en 24 GPH ideales</p>
         <label>Galones Consumidos:</label><input type="number" id="galReal" oninput="calcFuel()">
         <label>Horas de Motor:</label><input type="number" id="hrsReal" oninput="calcFuel()">
-        <div class="result-box">
-            <span id="resGPH" class="result-val">0.0</span>
-            <span style="font-size: 16px;">GPH (Combinado)</span>
-            <div id="fuelStatus" style="margin-top:10px; font-size:13px; font-weight:bold;"></div>
-        </div>
+        <div class="result-box"><span id="resGPH" class="result-val">0.0</span><span style="font-size: 16px;">GPH (Combinado)</span><div id="fuelStatus" style="margin-top:10px; font-size:13px; font-weight:bold;"></div></div>
     </div>
 
     <div id="range" class="tab-content">
@@ -112,100 +102,43 @@
             <div><label>Reserva (%):</label><input type="number" id="reservePct" value="10" oninput="calculateRange()"></div>
         </div>
         <div class="engine-grid">
-            <div class="engine-box">
-                <span style="font-size:9px; font-weight:bold; color:#004080; display:block; text-align:center;">PORT (MASTER)</span>
-                <label>RPM:</label><input type="number" id="rpmP" oninput="syncRPM()">
-                <label>GPH:</label><input type="number" id="gphP" oninput="calculateRange()">
-            </div>
-            <div class="engine-box" style="border-top-color: #ef4444;">
-                <span style="font-size:9px; font-weight:bold; color:#ef4444; display:block; text-align:center;">STBD</span>
-                <label>RPM:</label><input type="number" id="rpmS" oninput="calculateRange()">
-                <label>GPH:</label><input type="number" id="gphS" oninput="calculateRange()">
-            </div>
+            <div class="engine-box"><span style="font-size:9px; font-weight:bold; color:#004080; display:block; text-align:center;">PORT (MASTER)</span><label>RPM:</label><input type="number" id="rpmP" oninput="syncRPM()"><label>GPH:</label><input type="number" id="gphP" oninput="calculateRange()"></div>
+            <div class="engine-box" style="border-top-color: #ef4444;"><span style="font-size:9px; font-weight:bold; color:#ef4444; display:block; text-align:center;">STBD</span><label>RPM:</label><input type="number" id="rpmS" oninput="calculateRange()"><label>GPH:</label><input type="number" id="gphS" oninput="calculateRange()"></div>
         </div>
         <label>Velocidad GPS (Kts):</label><input type="number" id="knotsRange" oninput="calculateRange()">
-        <div class="result-box">
-            <span id="resRange" class="result-val" style="font-size:42px;">0</span>
-            <span id="resText" style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span>
-        </div>
+        <div class="result-box"><span id="resRange" class="result-val" style="font-size:42px;">0</span><span id="resText" style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span></div>
 
-<div class="section-header" style="margin-top: 20px; border-left-color: #e67e22; color: #e67e22; background: #fff3e0;">2. Smart Router (Optimizador)</div>
+        <div class="section-header" style="margin-top: 20px; border-left-color: #e67e22; color: #e67e22; background: #fff3e0;">2. Smart Router (Optimizador)</div>
         <div style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 10px; border: 2px solid #e67e22;">
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
                 <div><label style="font-size: 9px;">DISTANCIA (NM)</label><input type="number" id="routeDist" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
                 <div><label style="font-size: 9px;">DIESEL DISP.</label><input type="number" id="routeFuel" value="687" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
                 <div><label style="font-size: 9px;">RESERVA (%)</label><input type="number" id="routeRes" value="20" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
             </div>
-
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px;">
                 <div><label style="font-size: 9px;">FECHA LLEGADA</label><input type="date" id="routeArrDate" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;"></div>
                 <div><label style="font-size: 9px;">HORA LLEGADA</label><input type="time" id="routeArrTime" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;"></div>
                 <div>
                     <label style="font-size: 9px;">VELOCIDAD (RPM)</label>
                     <select id="routeSpeedMode" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;">
-                        <option value="AUTO">🌟 Auto</option>
-                        <option value="650">650 RPM</option>
-                        <option value="750">750 RPM</option>
-                        <option value="1000">1000 RPM</option>
-                        <option value="1250">1250 RPM</option>
-                        <option value="1500">1500 RPM</option>
-                        <option value="1750">1750 RPM</option>
-                        <option value="2000">2000 RPM</option>
-                        <option value="2250">2250 RPM</option>
-                        <option value="2500">2500 RPM</option>
-                        <option value="2750">2750 RPM</option>
-                        <option value="3000">3000 RPM</option>
-                        <option value="3250">3250 RPM</option>
-                        <option value="3500">3500 RPM</option>
-                        <option value="3650">3650 RPM</option>
+                        <option value="AUTO">🌟 Auto</option><option value="650">650 RPM</option><option value="750">750 RPM</option><option value="1000">1000 RPM</option><option value="1250">1250 RPM</option><option value="1500">1500 RPM</option><option value="1750">1750 RPM</option><option value="2000">2000 RPM</option><option value="2250">2250 RPM</option><option value="2500">2500 RPM</option><option value="2750">2750 RPM</option><option value="3000">3000 RPM</option><option value="3250">3250 RPM</option><option value="3500">3500 RPM</option><option value="3650">3650 RPM</option>
                     </select>
                 </div>
             </div>
-            
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; text-align: center;">
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
-                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span>
-                    <span id="optRPM" style="font-size: 18px; font-weight: bold; color: #004080;">0</span>
-                </div>
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
-                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span>
-                    <span id="optKnots" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 Kt</span>
-                </div>
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
-                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span>
-                    <span id="optTime" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 h</span>
-                </div>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;"><span style="font-size: 10px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span><span id="optRPM" style="font-size: 18px; font-weight: bold; color: #004080;">0</span></div>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;"><span style="font-size: 10px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span><span id="optKnots" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 Kt</span></div>
+                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;"><span style="font-size: 10px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span><span id="optTime" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 h</span></div>
             </div>
-
-            <div style="background: #eef6ff; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; border: 1px solid #005a9c;">
-                <span style="font-size: 10px; color: #005a9c; font-weight: bold; display: block;">SALIDA RECOMENDADA</span>
-                <span id="optDeparture" style="font-size: 16px; font-weight: bold; color: #d9534f;">--</span>
-            </div>
+            <div style="background: #eef6ff; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; border: 1px solid #005a9c;"><span style="font-size: 10px; color: #005a9c; font-weight: bold; display: block;">SALIDA RECOMENDADA</span><span id="optDeparture" style="font-size: 16px; font-weight: bold; color: #d9534f;">--</span></div>
         </div>
 
         <div class="section-header" style="margin-top: 20px;">Performance Oficial Aquila 46</div>
         <div style="background: white; border-radius: 10px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; max-height: 250px; overflow-y: auto;">
             <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
-                <thead>
-                    <tr style="background:#001f3f; color:white; position: sticky; top: 0;">
-                        <th>RPM</th><th>KNOTS</th><th>GPH</th><th>RANGE (NM)</th>
-                    </tr>
-                </thead>
+                <thead><tr style="background:#001f3f; color:white; position: sticky; top: 0;"><th>RPM</th><th>KNOTS</th><th>GPH</th><th>RANGE (NM)</th></tr></thead>
                 <tbody style="text-align:center;">
-                    <tr><td>650</td><td>3.2</td><td>0.6</td><td>3664</td></tr>
-                    <tr style="background:#f8fafc;"><td>750</td><td>3.9</td><td>0.9</td><td>2977</td></tr>
-                    <tr><td>1000</td><td>5.2</td><td>1.5</td><td>2381</td></tr>
-                    <tr style="background:#f8fafc;"><td>1250</td><td>6.3</td><td>2.7</td><td>1603</td></tr>
-                    <tr><td>1500</td><td>7.4</td><td>4.5</td><td>1129</td></tr>
-                    <tr style="background:#f8fafc;"><td>1750</td><td>8.2</td><td>6.6</td><td>853</td></tr>
-                    <tr><td>2000</td><td>9.6</td><td>9.5</td><td>694</td></tr>
-                    <tr style="background:#f8fafc;"><td>2250</td><td>10.1</td><td>13.0</td><td>533</td></tr>
-                    <tr><td>2500</td><td>10.8</td><td>18.0</td><td>412</td></tr>
-                    <tr style="background:#f8fafc;"><td>2750</td><td>12.1</td><td>22.5</td><td>369</td></tr>
-                    <tr><td>3000</td><td>14.8</td><td>29.5</td><td>344</td></tr>
-                    <tr style="background:#f8fafc;"><td>3250</td><td>17.3</td><td>34.5</td><td>344</td></tr>
-                    <tr><td>3500</td><td>19.5</td><td>42.5</td><td>315</td></tr>
-                    <tr style="background:#eef6ff; font-weight:bold; color:#d9534f;"><td>3650</td><td>20.6</td><td>49.0</td><td>288</td></tr>
+                    <tr><td>650</td><td>3.2</td><td>0.6</td><td>3664</td></tr><tr style="background:#f8fafc;"><td>750</td><td>3.9</td><td>0.9</td><td>2977</td></tr><tr><td>1000</td><td>5.2</td><td>1.5</td><td>2381</td></tr><tr style="background:#f8fafc;"><td>1250</td><td>6.3</td><td>2.7</td><td>1603</td></tr><tr><td>1500</td><td>7.4</td><td>4.5</td><td>1129</td></tr><tr style="background:#f8fafc;"><td>1750</td><td>8.2</td><td>6.6</td><td>853</td></tr><tr><td>2000</td><td>9.6</td><td>9.5</td><td>694</td></tr><tr style="background:#f8fafc;"><td>2250</td><td>10.1</td><td>13.0</td><td>533</td></tr><tr><td>2500</td><td>10.8</td><td>18.0</td><td>412</td></tr><tr style="background:#f8fafc;"><td>2750</td><td>12.1</td><td>22.5</td><td>369</td></tr><tr><td>3000</td><td>14.8</td><td>29.5</td><td>344</td></tr><tr style="background:#f8fafc;"><td>3250</td><td>17.3</td><td>34.5</td><td>344</td></tr><tr><td>3500</td><td>19.5</td><td>42.5</td><td>315</td></tr><tr style="background:#eef6ff; font-weight:bold; color:#d9534f;"><td>3650</td><td>20.6</td><td>49.0</td><td>288</td></tr>
                 </tbody>
             </table>
         </div>
@@ -217,87 +150,48 @@
             <label>Fecha de Servicio:</label><input type="date" id="sFecha">
             <label>Contratista / Vendor:</label><input type="text" id="sVendor" placeholder="Ej: Marina, Electromecánico...">
             <label>Horas de Motor:</label><input type="number" id="sHoras" placeholder="Horas al momento">
-            <label>Sistema / Categoría:</label>
-            <select id="sCat">
-                <option value="Motores">⚙️ Motores Principales</option>
-                <option value="Generador">⚡ Generador</option>
-                <option value="Fondo">🚤 Limpieza de Fondo/Zincs</option>
-                <option value="Electrónica">📡 Electrónica / Navegación</option>
-                <option value="Otros">🔧 Otros Servicios</option>
-            </select>
+            <label>Sistema / Categoría:</label><select id="sCat"><option value="Motores">⚙️ Motores Principales</option><option value="Generador">⚡ Generador</option><option value="Fondo">🚤 Limpieza de Fondo/Zincs</option><option value="Electrónica">📡 Electrónica / Navegación</option><option value="Otros">🔧 Otros Servicios</option></select>
             <label>Descripción del Trabajo:</label><input type="text" id="sDesc" placeholder="Qué se reparó o cambió">
             <label>Costo Total ($):</label><input type="number" id="sCosto" placeholder="0.00">
-            <label>Escanear Factura/Recibo:</label>
-            <input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #005a9c; cursor: pointer;">
+            <label>Escanear Factura/Recibo:</label><input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #005a9c; cursor: pointer;">
             <button class="btn btn-blue" onclick="saveService()" id="btnService">💾 GUARDAR Y SUBIR RECIBO</button>
         </div>
-
         <div class="section-header">Archivo de Mantenimiento</div>
         <input type="text" id="searchService" placeholder="🔍 Buscar vendor, repuesto o sistema..." onkeyup="filterServices()" style="margin-bottom: 10px; font-size: 14px;">
-        <div id="serviceHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;">
-            <p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p>
-        </div>
+        <div id="serviceHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;"><p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p></div>
     </div>
-
-    <div class="footer">Aquila 46 Yacht | 2x Volvo Penta 480s | 687 Gal | Fleet Command v12.0</div>
+    <div class="footer">Aquila 46 Yacht | 2x Volvo Penta 480s | 687 Gal | Fleet Command v13.0</div>
 </div>
 
 <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwRh-heJqS1ndedUnR6Kn1KlSpd1dNbPAS49mfLF0T825PzMAEHI0o9Q1LxT94kNTEY/exec';
-    let listaViajes = [];
-    let serviceData = [];
+    // ⚠️ ATENCIÓN AQUÍ: REEMPLAZA EL ENLACE DE ABAJO CON TU ENLACE REAL DE GOOGLE
+    const scriptURL = 'PON_TU_ENLACE_DE_GOOGLE_AQUI';
+    
+    let listaViajes = []; let serviceData = [];
 
-    // --- MOTOR OFFLINE (BANDEJA DE SALIDA) ---
+    // --- MOTOR OFFLINE ---
     function getOutbox() { return JSON.parse(localStorage.getItem('aquilaOutbox')) || []; }
-    
-    function saveToOutbox(payload) {
-        const outbox = getOutbox();
-        outbox.push(payload);
-        localStorage.setItem('aquilaOutbox', JSON.stringify(outbox));
-        updateOfflineBanner();
-    }
-    
+    function saveToOutbox(payload) { const outbox = getOutbox(); outbox.push(payload); localStorage.setItem('aquilaOutbox', JSON.stringify(outbox)); updateOfflineBanner(); }
     function updateOfflineBanner() {
-        const outbox = getOutbox();
-        const banner = document.getElementById('offlineBanner');
-        if (outbox.length > 0) {
-            document.getElementById('pendingCount').innerText = outbox.length;
-            banner.style.display = 'block';
-            banner.style.background = "#f39c12";
-            banner.innerHTML = `⏳ <span id="pendingCount">${outbox.length}</span> RECIBOS EN ESPERA. Se subirán al recuperar señal.`;
-        } else { banner.style.display = 'none'; }
+        const outbox = getOutbox(); const banner = document.getElementById('offlineBanner');
+        if (outbox.length > 0) { document.getElementById('pendingCount').innerText = outbox.length; banner.style.display = 'block'; banner.style.background = "#f39c12"; banner.innerHTML = `⏳ <span id="pendingCount">${outbox.length}</span> RECIBOS EN ESPERA. Se subirán al recuperar señal.`; } 
+        else { banner.style.display = 'none'; }
     }
-    
     async function syncOutbox() {
-        if (!navigator.onLine) return;
-        const outbox = getOutbox();
-        if (outbox.length === 0) return;
-
-        const banner = document.getElementById('offlineBanner');
-        banner.style.background = "#3498db";
-        banner.innerHTML = "🔄 Sincronizando con el satélite...";
-
+        if (!navigator.onLine) return; const outbox = getOutbox(); if (outbox.length === 0) return;
+        const banner = document.getElementById('offlineBanner'); banner.style.background = "#3498db"; banner.innerHTML = "🔄 Sincronizando con el satélite...";
         let remaining = [];
         for (let i = 0; i < outbox.length; i++) {
-            try {
-                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(outbox[i]) });
-            } catch (e) { remaining.push(outbox[i]); }
+            try { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(outbox[i]) }); } 
+            catch (e) { remaining.push(outbox[i]); }
         }
-        
         localStorage.setItem('aquilaOutbox', JSON.stringify(remaining));
-        
-        if (remaining.length === 0) {
-            banner.style.background = "#2ecc71";
-            banner.innerHTML = "✅ ¡Bitácora sincronizada al 100%!";
-            setTimeout(updateOfflineBanner, 3500);
-            cargarViajes(document.getElementById('tripSelect').value);
-            loadServiceHistory();
-        } else { updateOfflineBanner(); }
+        if (remaining.length === 0) { banner.style.background = "#2ecc71"; banner.innerHTML = "✅ ¡Bitácora sincronizada al 100%!"; setTimeout(updateOfflineBanner, 3500); cargarViajes(document.getElementById('tripSelect').value); loadServiceHistory(); } 
+        else { updateOfflineBanner(); }
     }
-    
     window.addEventListener('online', syncOutbox);
 
-    // --- NAVEGACIÓN ---
+    // --- NAVEGACIÓN DE PESTAÑAS ---
     function switchTab(tabId, element) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -306,77 +200,43 @@
         if(tabId === 'service') loadServiceHistory();
     }
 
+    // --- RANGE PRO Y SMART ROUTER ---
     function syncRPM() { document.getElementById('rpmS').value = document.getElementById('rpmP').value; calculateRange(); }
-
-    // --- RANGE PRO & AUDITOR ---
     function calculateRange() {
         const fuel = parseFloat(document.getElementById('fuelRange').value) || 0;
         const reservePct = parseFloat(document.getElementById('reservePct').value) || 0;
         const totalBurn = (parseFloat(document.getElementById('gphP').value) || 0) + (parseFloat(document.getElementById('gphS').value) || 0);
         const knots = parseFloat(document.getElementById('knotsRange').value) || 0;
-        
         document.getElementById('resText').innerText = `MILLAS (${reservePct}% RES)`;
-
         if(totalBurn > 0 && knots > 0) {
             const usableFuel = fuel * (1 - (reservePct / 100));
             const range = usableFuel * (knots / totalBurn);
             document.getElementById('resRange').innerText = Math.floor(range);
-        } else {
-            document.getElementById('resRange').innerText = "0";
-        }
+        } else { document.getElementById('resRange').innerText = "0"; }
     }
 
-    // Base de datos oficial del Aquila 46 (Volvo Penta 480s)
-    const aquilaData = [
-        { rpm: 650, knots: 3.2, gph: 0.6 },
-        { rpm: 750, knots: 3.9, gph: 0.9 },
-        { rpm: 1000, knots: 5.2, gph: 1.5 },
-        { rpm: 1250, knots: 6.3, gph: 2.7 },
-        { rpm: 1500, knots: 7.4, gph: 4.5 },
-        { rpm: 1750, knots: 8.2, gph: 6.6 },
-        { rpm: 2000, knots: 9.6, gph: 9.5 },
-        { rpm: 2250, knots: 10.1, gph: 13.0 },
-        { rpm: 2500, knots: 10.8, gph: 18.0 },
-        { rpm: 2750, knots: 12.1, gph: 22.5 },
-        { rpm: 3000, knots: 14.8, gph: 29.5 },
-        { rpm: 3250, knots: 17.3, gph: 34.5 },
-        { rpm: 3500, knots: 19.5, gph: 42.5 },
-        { rpm: 3650, knots: 20.6, gph: 49.0 }
-    ];
+    const aquilaData = [ { rpm: 650, knots: 3.2, gph: 0.6 }, { rpm: 750, knots: 3.9, gph: 0.9 }, { rpm: 1000, knots: 5.2, gph: 1.5 }, { rpm: 1250, knots: 6.3, gph: 2.7 }, { rpm: 1500, knots: 7.4, gph: 4.5 }, { rpm: 1750, knots: 8.2, gph: 6.6 }, { rpm: 2000, knots: 9.6, gph: 9.5 }, { rpm: 2250, knots: 10.1, gph: 13.0 }, { rpm: 2500, knots: 10.8, gph: 18.0 }, { rpm: 2750, knots: 12.1, gph: 22.5 }, { rpm: 3000, knots: 14.8, gph: 29.5 }, { rpm: 3250, knots: 17.3, gph: 34.5 }, { rpm: 3500, knots: 19.5, gph: 42.5 }, { rpm: 3650, knots: 20.6, gph: 49.0 } ];
 
-function calculateSmartRoute() {
+    function calculateSmartRoute() {
         const dist = parseFloat(document.getElementById('routeDist').value) || 0;
         const fuel = parseFloat(document.getElementById('routeFuel').value) || 0;
         const resPct = parseFloat(document.getElementById('routeRes').value) || 0;
-        
         const arrDate = document.getElementById('routeArrDate').value;
         const arrTime = document.getElementById('routeArrTime').value;
         const speedMode = document.getElementById('routeSpeedMode').value;
-
         if(dist === 0 || fuel === 0) return;
 
         const usableFuel = fuel * (1 - (resPct / 100));
         const requiredNMPG = dist / usableFuel;
-        let selectedSetting = null;
-        let isSafe = true;
+        let selectedSetting = null; let isSafe = true;
 
         if (speedMode === "AUTO") {
-            // Modo Inteligente: Busca la configuración más rápida y segura
-            for (let i = aquilaData.length - 1; i >= 0; i--) {
-                let actualNMPG = aquilaData[i].knots / aquilaData[i].gph;
-                if (actualNMPG >= requiredNMPG) { selectedSetting = aquilaData[i]; break; }
-            }
+            for (let i = aquilaData.length - 1; i >= 0; i--) { let actualNMPG = aquilaData[i].knots / aquilaData[i].gph; if (actualNMPG >= requiredNMPG) { selectedSetting = aquilaData[i]; break; } }
             if (!selectedSetting) isSafe = false;
         } else {
-            // Modo Manual: El capitán elige la velocidad
             const targetRPM = parseInt(speedMode);
             selectedSetting = aquilaData.find(d => d.rpm === targetRPM);
-            if (selectedSetting) {
-                let actualNMPG = selectedSetting.knots / selectedSetting.gph;
-                if (actualNMPG < requiredNMPG) {
-                    isSafe = false; // La velocidad elegida consume demasiado para este viaje
-                }
-            }
+            if (selectedSetting && (selectedSetting.knots / selectedSetting.gph) < requiredNMPG) isSafe = false;
         }
 
         if (selectedSetting) {
@@ -384,70 +244,28 @@ function calculateSmartRoute() {
             document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
             
             if (isSafe) {
-                document.getElementById('optRPM').innerText = selectedSetting.rpm;
-                document.getElementById('optRPM').style.color = "#004080";
-                document.getElementById('optKnots').innerText = selectedSetting.knots.toFixed(1) + " Kt";
-                document.getElementById('optKnots').style.color = "#004080";
+                document.getElementById('optRPM').innerText = selectedSetting.rpm; document.getElementById('optRPM').style.color = "#004080";
+                document.getElementById('optKnots').innerText = selectedSetting.knots.toFixed(1) + " Kt"; document.getElementById('optKnots').style.color = "#004080";
             } else {
-                // Alerta roja si la configuración elegida viola el límite de combustible
-                document.getElementById('optRPM').innerText = selectedSetting.rpm + " ⚠️";
-                document.getElementById('optRPM').style.color = "#e74c3c";
-                document.getElementById('optKnots').innerText = selectedSetting.knots.toFixed(1) + " Kt (Riesgo)";
-                document.getElementById('optKnots').style.color = "#e74c3c";
+                document.getElementById('optRPM').innerText = selectedSetting.rpm + " ⚠️"; document.getElementById('optRPM').style.color = "#e74c3c";
+                document.getElementById('optKnots').innerText = selectedSetting.knots.toFixed(1) + " Kt (Riesgo)"; document.getElementById('optKnots').style.color = "#e74c3c";
             }
-
             if (arrDate && arrTime) {
                 const arrivalDateObj = new Date(`${arrDate}T${arrTime}`);
                 const departureDateObj = new Date(arrivalDateObj.getTime() - (timeHours * 60 * 60 * 1000));
                 const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
                 document.getElementById('optDeparture').innerText = departureDateObj.toLocaleString('es-ES', options).toUpperCase();
-            } else {
-                document.getElementById('optDeparture').innerText = "Pon fecha/hora de llegada";
-            }
-
+            } else { document.getElementById('optDeparture').innerText = "Pon fecha/hora de llegada"; }
         } else {
-            // Si el modo AUTO no encuentra ni una sola velocidad segura
-            document.getElementById('optRPM').innerText = "⚠️";
-            document.getElementById('optKnots').innerText = "SIN RANGO";
-            document.getElementById('optTime').innerText = "Falta Diesel";
-            document.getElementById('optDeparture').innerText = "--";
-            document.getElementById('optRPM').style.color = "#e74c3c";
+            document.getElementById('optRPM').innerText = "⚠️"; document.getElementById('optKnots').innerText = "SIN RANGO"; document.getElementById('optTime').innerText = "Falta Diesel"; document.getElementById('optDeparture').innerText = "--"; document.getElementById('optRPM').style.color = "#e74c3c";
         }
     }
-        if (bestSetting) {
-            const timeHours = dist / bestSetting.knots;
-            document.getElementById('optRPM').innerText = bestSetting.rpm;
-            document.getElementById('optKnots').innerText = bestSetting.knots.toFixed(1) + " Kt";
-            document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
-            document.getElementById('optRPM').style.color = "#004080";
 
-            if (arrDate && arrTime) {
-                // Combina la fecha y hora, y le resta el tiempo de viaje en milisegundos
-                const arrivalDateObj = new Date(`${arrDate}T${arrTime}`);
-                const departureDateObj = new Date(arrivalDateObj.getTime() - (timeHours * 60 * 60 * 1000));
-                
-                const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                document.getElementById('optDeparture').innerText = departureDateObj.toLocaleString('es-ES', options).toUpperCase();
-            } else {
-                document.getElementById('optDeparture').innerText = "Pon fecha/hora de llegada";
-            }
-
-        } else {
-            document.getElementById('optRPM').innerText = "⚠️";
-            document.getElementById('optKnots').innerText = "SIN RANGO";
-            document.getElementById('optTime').innerText = "Falta Diesel";
-            document.getElementById('optDeparture').innerText = "--";
-            document.getElementById('optRPM').style.color = "#e74c3c";
-        }
-    }
     function calcFuel() {
-        const gal = parseFloat(document.getElementById('galReal').value) || 0;
-        const hrs = parseFloat(document.getElementById('hrsReal').value) || 0;
+        const gal = parseFloat(document.getElementById('galReal').value) || 0; const hrs = parseFloat(document.getElementById('hrsReal').value) || 0;
         if(gal > 0 && hrs > 0) {
-            const real = gal / hrs;
-            document.getElementById('resGPH').innerText = real.toFixed(1);
-            const status = document.getElementById('fuelStatus');
-            const diff = real - 24; 
+            const real = gal / hrs; document.getElementById('resGPH').innerText = real.toFixed(1);
+            const status = document.getElementById('fuelStatus'); const diff = real - 24; 
             if(Math.abs(diff) < 2) { status.innerText = "✅ RANGO OK (24 GPH)"; status.style.color = "#2ecc71"; }
             else if(diff > 2) { status.innerText = "⚠️ ELEVADO (+" + diff.toFixed(1) + ")"; status.style.color = "#e74c3c"; }
             else { status.innerText = "⚓ EFICIENTE"; status.style.color = "#3498db"; }
@@ -455,37 +273,31 @@ function calculateSmartRoute() {
     }
 
     // --- LOGBOOK ---
+    function llenarDropdownViajes(nombreASeleccionar) {
+        const select = document.getElementById('tripSelect'); let options = '<option value="">-- Selecciona viaje --</option>';
+        if (listaViajes && listaViajes.length > 0) { listaViajes.forEach(v => { options += `<option value="${v.nombre}">${v.nombre}</option>`; }); select.innerHTML = options; } 
+        else { select.innerHTML = '<option value="">No hay viajes</option>'; }
+        if (nombreASeleccionar) { select.value = nombreASeleccionar; updateTotalDisplay(); }
+    }
+
     async function cargarViajes(nombreASeleccionar = null) {
-        const select = document.getElementById('tripSelect');
-        if(!navigator.onLine) { select.innerHTML = '<option value="">✈️ Modo Offline</option>'; return; }
-        
-        select.innerHTML = '<option value="">-- Selecciona viaje --</option>';
+        const select = document.getElementById('tripSelect'); select.innerHTML = '<option value="">-- Cargando... --</option>';
+        if (!navigator.onLine) { listaViajes = JSON.parse(localStorage.getItem('aquilaTrips')) || []; llenarDropdownViajes(nombreASeleccionar); return; }
         try {
-            const response = await fetch(scriptURL);
-            listaViajes = await response.json();
-            let options = '<option value="">-- Selecciona viaje --</option>';
-            if (listaViajes && listaViajes.length > 0) {
-                listaViajes.forEach(v => { options += `<option value="${v.nombre}">${v.nombre}</option>`; });
-                select.innerHTML = options;
-            } else { select.innerHTML = '<option value="">No hay viajes en Drive</option>'; }
-            if (nombreASeleccionar) { select.value = nombreASeleccionar; updateTotalDisplay(); }
-        } catch (e) { select.innerHTML = '<option value="">❌ Error de conexión</option>'; }
+            const response = await fetch(scriptURL); listaViajes = await response.json();
+            localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes)); llenarDropdownViajes(nombreASeleccionar);
+        } catch (e) { listaViajes = JSON.parse(localStorage.getItem('aquilaTrips')) || []; llenarDropdownViajes(nombreASeleccionar); }
     }
 
     function updateTotalDisplay() {
-        const nombre = document.getElementById('tripSelect').value;
-        const viaje = listaViajes.find(v => v.nombre === nombre);
+        const nombre = document.getElementById('tripSelect').value; const viaje = listaViajes.find(v => v.nombre === nombre);
         document.getElementById('displayTotal').innerText = viaje ? `$${viaje.total.toFixed(2)}` : "$0.00";
-        
         const historyDiv = document.getElementById('expenseHistory');
         if (!viaje) { historyDiv.innerHTML = "<p style='text-align:center; color:#666;'>Selecciona un viaje para ver sus recibos y gastos.</p>"; return; }
         if (!viaje.gastos || viaje.gastos.length === 0) { historyDiv.innerHTML = "<p style='text-align:center; color:#666;'>No hay gastos registrados.</p>"; return; }
-        
         let html = "";
         viaje.gastos.forEach(g => {
-            let btnHtml = (g.fileUrl && g.fileUrl !== "Sin recibo adjunto" && !g.fileUrl.includes("ERROR")) 
-                ? `<button onclick="window.open('${g.fileUrl}', '_blank')" style="background:#2ecc71; color:white; border:none; padding:6px 10px; border-radius:5px; font-weight:bold; cursor:pointer; font-size:10px; margin-top:5px;">📄 VER RECIBO</button>` 
-                : `<span style="font-size:10px; color:#aaa; font-style:italic; display:block; margin-top:5px;">Sin recibo</span>`;
+            let btnHtml = (g.fileUrl && g.fileUrl !== "Sin recibo adjunto" && !g.fileUrl.includes("ERROR") && g.fileUrl !== "Bandeja") ? `<button onclick="window.open('${g.fileUrl}', '_blank')" style="background:#2ecc71; color:white; border:none; padding:6px 10px; border-radius:5px; font-weight:bold; cursor:pointer; font-size:10px; margin-top:5px;">📄 VER RECIBO</button>` : `<span style="font-size:10px; color:#aaa; font-style:italic; display:block; margin-top:5px;">${g.fileUrl === 'Bandeja' ? '⏳ Subiendo...' : 'Sin recibo'}</span>`;
             html += `<div style="background:white; padding:10px; margin-bottom:10px; border-radius:8px; border-left: 4px solid #005a9c; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
                         <div><div style="font-size:10px; color:#666;">📅 ${g.fecha}</div><div style="font-weight:bold; font-size:13px; color:#333; margin-top:3px;">${g.categoria}</div></div>
                         <div style="text-align: right;"><div style="font-weight:bold; font-size:15px; color:#d9534f;">$${g.monto.toFixed(2)}</div>${btnHtml}</div>
@@ -494,203 +306,85 @@ function calculateSmartRoute() {
         historyDiv.innerHTML = html;
     }
 
-// --- NUEVO SISTEMA DE VIAJES OFFLINE ---
-    function llenarDropdownViajes(nombreASeleccionar) {
-        const select = document.getElementById('tripSelect');
-        let options = '<option value="">-- Selecciona viaje --</option>';
-        if (listaViajes && listaViajes.length > 0) {
-            listaViajes.forEach(v => { options += `<option value="${v.nombre}">${v.nombre}</option>`; });
-            select.innerHTML = options;
-        } else { select.innerHTML = '<option value="">No hay viajes</option>'; }
-        if (nombreASeleccionar) { select.value = nombreASeleccionar; updateTotalDisplay(); }
-    }
-
-    async function cargarViajes(nombreASeleccionar = null) {
-        const select = document.getElementById('tripSelect');
-        select.innerHTML = '<option value="">-- Cargando... --</option>';
-        
-        // Si no hay señal, carga los viajes guardados en la memoria del teléfono
-        if (!navigator.onLine) {
-            listaViajes = JSON.parse(localStorage.getItem('aquilaTrips')) || [];
-            llenarDropdownViajes(nombreASeleccionar);
-            return;
-        }
-
-        try {
-            const response = await fetch(scriptURL);
-            listaViajes = await response.json();
-            // Guarda una copia de seguridad en el teléfono para cuando pierdas la señal
-            localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes));
-            llenarDropdownViajes(nombreASeleccionar);
-        } catch (e) {
-            // Si falla el internet a mitad de carga, usa la memoria
-            listaViajes = JSON.parse(localStorage.getItem('aquilaTrips')) || [];
-            llenarDropdownViajes(nombreASeleccionar);
-        }
-    }
-
     async function createNewTrip() {
-        const dest = document.getElementById('newTripDest').value;
-        const date = document.getElementById('newTripDate').value;
-        if(!dest || !date) return alert("Faltan datos");
-        const name = `${dest} - ${date}`;
-        
+        const dest = document.getElementById('newTripDest').value; const date = document.getElementById('newTripDate').value;
+        if(!dest || !date) return alert("Faltan datos"); const name = `${dest} - ${date}`;
         const payload = { type: "NUEVO_VIAJE", tripName: name, fecha: date };
-        
-        // Añade el viaje visualmente y a la memoria del teléfono de inmediato
-        listaViajes.push({ nombre: name, total: 0, gastos: [] });
-        localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes));
-        
-        if (!navigator.onLine) {
-            saveToOutbox(payload);
-            alert("⚠️ Viaje creado en modo Offline. Se subirá a tu Drive cuando recuperes la señal.");
-        } else {
-            // Si hay internet, lo sube de una vez
-            await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-        }
-        
-        document.getElementById('newTripDest').value = "";
-        llenarDropdownViajes(name);
+        listaViajes.push({ nombre: name, total: 0, gastos: [] }); localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes));
+        if (!navigator.onLine) { saveToOutbox(payload); alert("⚠️ Viaje creado offline. Se subirá cuando recuperes señal."); } 
+        else { await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) }); }
+        document.getElementById('newTripDest').value = ""; llenarDropdownViajes(name);
     }
 
-
-async function addExpense() {
-        const btn = document.getElementById('btnGasto');
-        const name = document.getElementById('tripSelect').value;
-        const monto = parseFloat(document.getElementById('monto').value);
+    async function addExpense() {
+        const btn = document.getElementById('btnGasto'); const name = document.getElementById('tripSelect').value; const monto = parseFloat(document.getElementById('monto').value);
         if(!name || isNaN(monto)) return alert("⚠️ Selecciona el viaje y pon el monto.");
-
-        btn.innerText = "⏳ PROCESANDO...";
-        btn.disabled = true;
-        const fileInput = document.getElementById('gastoFile');
-        let fileData = "", mimeType = "", filename = "";
-
+        btn.innerText = "⏳ PROCESANDO..."; btn.disabled = true;
+        const fileInput = document.getElementById('gastoFile'); let fileData = "", mimeType = "", filename = "";
         try {
             if (fileInput && fileInput.files.length > 0) {
-                btn.innerText = "📸 ACHICANDO FOTO...";
-                const file = fileInput.files[0];
-                filename = file.name ? file.name : "recibo_gasto.jpg";
-                mimeType = "image/jpeg";
-                const base64Full = await compressImage(file);
-                fileData = base64Full.split(',')[1]; 
+                btn.innerText = "📸 ACHICANDO FOTO..."; const file = fileInput.files[0]; filename = file.name ? file.name : "recibo_gasto.jpg"; mimeType = "image/jpeg";
+                const base64Full = await compressImage(file); fileData = base64Full.split(',')[1]; 
             }
-
-            const fecha = document.getElementById('fechaGasto').value;
-            const cat = document.getElementById('cat').value;
+            const fecha = document.getElementById('fechaGasto').value; const cat = document.getElementById('cat').value;
             const payload = { type: "GASTO_DETALLE", tripName: name, categoria: cat, monto: monto, fecha: fecha, filename: filename, mimeType: mimeType, fileData: fileData };
-
-            // === MEMORIA INSTANTÁNEA PARA EL MODO OFFLINE ===
-            // Busca el viaje en la memoria del teléfono y le inyecta el gasto a la pantalla
+            
             let viajeLocal = listaViajes.find(v => v.nombre === name);
             if (viajeLocal) {
-                viajeLocal.total += monto;
-                if (!viajeLocal.gastos) viajeLocal.gastos = [];
-                // Lo pone de primero en la lista (unshift)
-                viajeLocal.gastos.unshift({ 
-                    fecha: fecha, 
-                    categoria: cat, 
-                    monto: monto, 
-                    fileUrl: fileData ? "Bandeja" : "Sin recibo adjunto" 
-                });
+                viajeLocal.total += monto; if (!viajeLocal.gastos) viajeLocal.gastos = [];
+                viajeLocal.gastos.unshift({ fecha: fecha, categoria: cat, monto: monto, fileUrl: fileData ? "Bandeja" : "Sin recibo adjunto" });
                 localStorage.setItem('aquilaTrips', JSON.stringify(listaViajes));
             }
-
-            if (!navigator.onLine) {
-                saveToOutbox(payload);
-                alert("⚠️ Sin internet. Guardado en la memoria del teléfono.");
-                // Refresca la pantalla para que veas el gasto al instante
-                updateTotalDisplay(); 
-            } else {
-                btn.innerText = "⏳ ENVIANDO A DRIVE...";
-                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-                alert("✅ Gasto registrado con éxito.");
-                // Si hay internet, vuelve a descargar la lista oficial para tener el enlace real del recibo
-                setTimeout(() => cargarViajes(name), 1500);
-            }
-            
-            document.getElementById('monto').value = ""; 
-            if(fileInput) fileInput.value = ""; 
-            
+            if (!navigator.onLine) { saveToOutbox(payload); alert("⚠️ Sin internet. Guardado en memoria."); updateTotalDisplay(); } 
+            else { btn.innerText = "⏳ ENVIANDO A DRIVE..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Gasto registrado con éxito."); setTimeout(() => cargarViajes(name), 1500); }
+            document.getElementById('monto').value = ""; if(fileInput) fileInput.value = ""; 
         } catch (e) { alert("❌ Error: " + e.message); }
-        
-        btn.innerText = "➕ REGISTRAR PARTIDA";
-        btn.disabled = false;
+        btn.innerText = "➕ REGISTRAR PARTIDA"; btn.disabled = false;
     }
 
-    // --- SERVICE LOG ---
+    // --- MANTENIMIENTO ---
     async function saveService() {
-        const btn = document.getElementById('btnService');
-        btn.innerText = "⏳ PROCESANDO...";
-        btn.disabled = true;
-        const fileInput = document.getElementById('sFile');
-        let fileData = "", mimeType = "", filename = "";
-        
+        const btn = document.getElementById('btnService'); btn.innerText = "⏳ PROCESANDO..."; btn.disabled = true;
+        const fileInput = document.getElementById('sFile'); let fileData = "", mimeType = "", filename = "";
         try {
             if (fileInput.files.length > 0) {
-                btn.innerText = "📸 ACHICANDO FOTO...";
-                const file = fileInput.files[0];
-                filename = file.name ? file.name : "factura.jpg";
-                mimeType = "image/jpeg";
-                const base64Full = await compressImage(file);
-                fileData = base64Full.split(',')[1]; 
+                btn.innerText = "📸 ACHICANDO FOTO..."; const file = fileInput.files[0]; filename = file.name ? file.name : "factura.jpg"; mimeType = "image/jpeg";
+                const base64Full = await compressImage(file); fileData = base64Full.split(',')[1]; 
             }
-
             const payload = { type: "MANTENIMIENTO", fecha: document.getElementById('sFecha').value, vendor: document.getElementById('sVendor').value, horas: document.getElementById('sHoras').value, categoria: document.getElementById('sCat').value, desc: document.getElementById('sDesc').value, costo: parseFloat(document.getElementById('sCosto').value) || 0, filename: filename, mimeType: mimeType, fileData: fileData };
-
             if(!payload.vendor || !payload.desc) { alert("⚠️ Llena Vendor y Descripción."); btn.disabled = false; return; }
-
-            if (!navigator.onLine) {
-                saveToOutbox(payload);
-                alert("⚠️ Sin internet. Guardado en la bandeja de salida.");
-            } else {
-                btn.innerText = "⏳ ENVIANDO A DRIVE...";
-                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
-                alert("✅ ¡Éxito! Servicio guardado.");
-            }
+            if (!navigator.onLine) { saveToOutbox(payload); alert("⚠️ Sin internet. Guardado en memoria."); } 
+            else { btn.innerText = "⏳ ENVIANDO..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Servicio guardado."); }
             document.getElementById('sVendor').value = ""; document.getElementById('sDesc').value = ""; document.getElementById('sCosto').value = ""; document.getElementById('sFile').value = "";
             if (navigator.onLine) loadServiceHistory(); 
         } catch (e) { alert("❌ Falló: " + e.message); }
-        btn.innerText = "💾 GUARDAR Y SUBIR RECIBO";
-        btn.disabled = false;
+        btn.innerText = "💾 GUARDAR Y SUBIR RECIBO"; btn.disabled = false;
     }
 
     function compressImage(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
+                const img = new Image(); img.onload = function() {
                     try {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 600; let width = img.width, height = img.height;
+                        const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; let width = img.width, height = img.height;
                         if (width > MAX_WIDTH) { height = Math.round(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
                         canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.4)); 
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.4)); 
                     } catch (err) { reject(new Error("Fallo al achicar.")); }
-                };
-                img.onerror = function() { reject(new Error("Foto corrupta.")); };
-                img.src = event.target.result;
-            };
-            reader.onerror = function() { reject(new Error("No se pudo leer.")); };
-            reader.readAsDataURL(file);
+                }; img.onerror = function() { reject(new Error("Foto corrupta.")); }; img.src = event.target.result;
+            }; reader.onerror = function() { reject(new Error("No se pudo leer.")); }; reader.readAsDataURL(file);
         });
     }
 
     async function loadServiceHistory() {
-        if(!navigator.onLine) return;
-        const historyDiv = document.getElementById('serviceHistory');
-        historyDiv.innerHTML = "<p style='text-align:center;'>🔄 Buscando archivos...</p>";
-        try {
-            const response = await fetch(scriptURL + "?action=getServices");
-            serviceData = await response.json();
-            renderServices(serviceData);
-        } catch (e) { historyDiv.innerHTML = "<p style='color:red; text-align:center;'>❌ Error de conexión</p>"; }
+        if(!navigator.onLine) return; const historyDiv = document.getElementById('serviceHistory'); historyDiv.innerHTML = "<p style='text-align:center;'>🔄 Buscando archivos...</p>";
+        try { const response = await fetch(scriptURL + "?action=getServices"); serviceData = await response.json(); renderServices(serviceData); } 
+        catch (e) { historyDiv.innerHTML = "<p style='color:red; text-align:center;'>❌ Error de conexión</p>"; }
     }
 
     function renderServices(data) {
-        const historyDiv = document.getElementById('serviceHistory');
-        historyDiv.innerHTML = "";
+        const historyDiv = document.getElementById('serviceHistory'); historyDiv.innerHTML = "";
         if(data.length === 0) { historyDiv.innerHTML = "<p style='text-align:center;'>El historial está vacío.</p>"; return; }
         data.forEach(s => {
             let btnHtml = (s.fileUrl && s.fileUrl !== "Sin recibo adjunto") ? `<button onclick="window.open('${s.fileUrl}', '_blank')" style="background:#2ecc71; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:8px;">📄 VER FACTURA</button>` : `<span style="font-size:11px; color:#aaa; font-style:italic;">Sin factura</span>`;
@@ -706,19 +400,13 @@ async function addExpense() {
 
     window.onload = function() {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('newTripDate').value = today;
-        document.getElementById('fechaGasto').value = today;
-        document.getElementById('sFecha').value = today;
-        updateOfflineBanner();
-        syncOutbox();
-        cargarViajes();
+        document.getElementById('newTripDate').value = today; document.getElementById('fechaGasto').value = today; document.getElementById('sFecha').value = today;
+        updateOfflineBanner(); syncOutbox(); cargarViajes();
     };
 </script>
 
 <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Falló', err)); });
-    }
+    if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Falló', err)); }); }
 </script>
 </body>
 </html>
