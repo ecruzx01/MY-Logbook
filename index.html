@@ -129,7 +129,7 @@
             <span id="resText" style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span>
         </div>
 
-       <div class="section-header" style="margin-top: 20px; border-left-color: #e67e22; color: #e67e22; background: #fff3e0;">2. Smart Router (Optimizador)</div>
+<div class="section-header" style="margin-top: 20px; border-left-color: #e67e22; color: #e67e22; background: #fff3e0;">2. Smart Router (Optimizador)</div>
         <div style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 10px; border: 2px solid #e67e22;">
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
                 <div><label style="font-size: 9px;">DISTANCIA (NM)</label><input type="number" id="routeDist" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
@@ -137,14 +137,34 @@
                 <div><label style="font-size: 9px;">RESERVA (%)</label><input type="number" id="routeRes" value="20" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
-                <div><label style="font-size: 9px;">FECHA LLEGADA</label><input type="date" id="routeArrDate" onchange="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
-                <div><label style="font-size: 9px;">HORA LLEGADA</label><input type="time" id="routeArrTime" onchange="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px;">
+                <div><label style="font-size: 9px;">FECHA LLEGADA</label><input type="date" id="routeArrDate" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;"></div>
+                <div><label style="font-size: 9px;">HORA LLEGADA</label><input type="time" id="routeArrTime" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;"></div>
+                <div>
+                    <label style="font-size: 9px;">VELOCIDAD (RPM)</label>
+                    <select id="routeSpeedMode" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;">
+                        <option value="AUTO">🌟 Auto</option>
+                        <option value="650">650 RPM</option>
+                        <option value="750">750 RPM</option>
+                        <option value="1000">1000 RPM</option>
+                        <option value="1250">1250 RPM</option>
+                        <option value="1500">1500 RPM</option>
+                        <option value="1750">1750 RPM</option>
+                        <option value="2000">2000 RPM</option>
+                        <option value="2250">2250 RPM</option>
+                        <option value="2500">2500 RPM</option>
+                        <option value="2750">2750 RPM</option>
+                        <option value="3000">3000 RPM</option>
+                        <option value="3250">3250 RPM</option>
+                        <option value="3500">3500 RPM</option>
+                        <option value="3650">3650 RPM</option>
+                    </select>
+                </div>
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; text-align: center;">
                 <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
-                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">RPM IDEAL</span>
+                    <span style="font-size: 10px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span>
                     <span id="optRPM" style="font-size: 18px; font-weight: bold; color: #004080;">0</span>
                 </div>
                 <div style="background: #f8fafc; padding: 10px; border-radius: 8px;">
@@ -331,18 +351,69 @@ function calculateSmartRoute() {
         
         const arrDate = document.getElementById('routeArrDate').value;
         const arrTime = document.getElementById('routeArrTime').value;
+        const speedMode = document.getElementById('routeSpeedMode').value;
 
         if(dist === 0 || fuel === 0) return;
 
         const usableFuel = fuel * (1 - (resPct / 100));
         const requiredNMPG = dist / usableFuel;
-        let bestSetting = null;
+        let selectedSetting = null;
+        let isSafe = true;
 
-        for (let i = aquilaData.length - 1; i >= 0; i--) {
-            let actualNMPG = aquilaData[i].knots / aquilaData[i].gph;
-            if (actualNMPG >= requiredNMPG) { bestSetting = aquilaData[i]; break; }
+        if (speedMode === "AUTO") {
+            // Modo Inteligente: Busca la configuración más rápida y segura
+            for (let i = aquilaData.length - 1; i >= 0; i--) {
+                let actualNMPG = aquilaData[i].knots / aquilaData[i].gph;
+                if (actualNMPG >= requiredNMPG) { selectedSetting = aquilaData[i]; break; }
+            }
+            if (!selectedSetting) isSafe = false;
+        } else {
+            // Modo Manual: El capitán elige la velocidad
+            const targetRPM = parseInt(speedMode);
+            selectedSetting = aquilaData.find(d => d.rpm === targetRPM);
+            if (selectedSetting) {
+                let actualNMPG = selectedSetting.knots / selectedSetting.gph;
+                if (actualNMPG < requiredNMPG) {
+                    isSafe = false; // La velocidad elegida consume demasiado para este viaje
+                }
+            }
         }
 
+        if (selectedSetting) {
+            const timeHours = dist / selectedSetting.knots;
+            document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
+            
+            if (isSafe) {
+                document.getElementById('optRPM').innerText = selectedSetting.rpm;
+                document.getElementById('optRPM').style.color = "#004080";
+                document.getElementById('optKnots').innerText = selectedSetting.knots.toFixed(1) + " Kt";
+                document.getElementById('optKnots').style.color = "#004080";
+            } else {
+                // Alerta roja si la configuración elegida viola el límite de combustible
+                document.getElementById('optRPM').innerText = selectedSetting.rpm + " ⚠️";
+                document.getElementById('optRPM').style.color = "#e74c3c";
+                document.getElementById('optKnots').innerText = selectedSetting.knots.toFixed(1) + " Kt (Riesgo)";
+                document.getElementById('optKnots').style.color = "#e74c3c";
+            }
+
+            if (arrDate && arrTime) {
+                const arrivalDateObj = new Date(`${arrDate}T${arrTime}`);
+                const departureDateObj = new Date(arrivalDateObj.getTime() - (timeHours * 60 * 60 * 1000));
+                const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('optDeparture').innerText = departureDateObj.toLocaleString('es-ES', options).toUpperCase();
+            } else {
+                document.getElementById('optDeparture').innerText = "Pon fecha/hora de llegada";
+            }
+
+        } else {
+            // Si el modo AUTO no encuentra ni una sola velocidad segura
+            document.getElementById('optRPM').innerText = "⚠️";
+            document.getElementById('optKnots').innerText = "SIN RANGO";
+            document.getElementById('optTime').innerText = "Falta Diesel";
+            document.getElementById('optDeparture').innerText = "--";
+            document.getElementById('optRPM').style.color = "#e74c3c";
+        }
+    }
         if (bestSetting) {
             const timeHours = dist / bestSetting.knots;
             document.getElementById('optRPM').innerText = bestSetting.rpm;
