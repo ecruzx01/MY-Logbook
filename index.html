@@ -125,10 +125,23 @@
                     </select>
                 </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 15px; text-align: center;">
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;"><span style="font-size: 10px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span><span id="optRPM" style="font-size: 18px; font-weight: bold; color: #004080;">0</span></div>
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;"><span style="font-size: 10px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span><span id="optKnots" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 Kt</span></div>
-                <div style="background: #f8fafc; padding: 10px; border-radius: 8px;"><span style="font-size: 10px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span><span id="optTime" style="font-size: 18px; font-weight: bold; color: #004080;">0.0 h</span></div>
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; text-align: center;">
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span>
+                    <span id="optRPM" style="font-size: 15px; font-weight: bold; color: #004080;">0</span>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span>
+                    <span id="optKnots" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 Kt</span>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span>
+                    <span id="optTime" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 h</span>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">SOBRANTE</span>
+                    <span id="optRemFuel" style="font-size: 15px; font-weight: bold; color: #2ecc71;">0 Gal</span>
+                </div>
             </div>
             <div style="background: #eef6ff; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; border: 1px solid #005a9c;"><span style="font-size: 10px; color: #005a9c; font-weight: bold; display: block;">SALIDA RECOMENDADA</span><span id="optDeparture" style="font-size: 16px; font-weight: bold; color: #d9534f;">--</span></div>
         </div>
