@@ -30,6 +30,11 @@
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background: #001f3f; color: white; }
         .footer { font-size: 10px; color: #aaa; text-align: center; margin-top: 20px; }
+        .task-card { background: white; padding: 12px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ccc; }
+        .task-info { font-size: 12px; }
+        .task-title { font-weight: bold; color: #004080; font-size: 14px; }
+        .task-date { font-weight: bold; margin-top: 3px; display: inline-block; padding: 3px 6px; border-radius: 5px; font-size: 11px; }
+        .btn-done { background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -122,36 +127,25 @@
                     <label style="font-size: 9px;">VELOCIDAD (RPM)</label>
                     <select id="routeSpeedMode" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;">
                         <option value="AUTO">🌟 Auto</option>
-                        <option value="800">800 RPM</option>
-                        <option value="900">900 RPM</option>
-                        <option value="1100">1100 RPM</option>
-                        <option value="1300">1300 RPM</option>
-                        <option value="1500">1500 RPM</option>
-                        <option value="1600">1600 RPM</option>
-                        <option value="1800">1800 RPM</option>
-                        <option value="1900">1900 RPM</option>
-                        <option value="2100">2100 RPM</option>
-                        <option value="2200">2200 RPM</option>
-                        <option value="2300">2300 RPM</option>
+                        <option value="800">800 RPM</option><option value="900">900 RPM</option><option value="1100">1100 RPM</option>
+                        <option value="1300">1300 RPM</option><option value="1500">1500 RPM</option><option value="1600">1600 RPM</option>
+                        <option value="1800">1800 RPM</option><option value="1900">1900 RPM</option><option value="2100">2100 RPM</option>
+                        <option value="2200">2200 RPM</option><option value="2300">2300 RPM</option>
                     </select>
                 </div>
             </div>
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; text-align: center;">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; text-align: center;">
                 <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
-                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span>
-                    <span id="optRPM" style="font-size: 15px; font-weight: bold; color: #004080;">0</span>
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span><span id="optRPM" style="font-size: 15px; font-weight: bold; color: #004080;">0</span>
                 </div>
                 <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
-                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span>
-                    <span id="optKnots" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 Kt</span>
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span><span id="optKnots" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 Kt</span>
                 </div>
                 <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
-                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span>
-                    <span id="optTime" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 h</span>
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span><span id="optTime" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 h</span>
                 </div>
                 <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
-                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">SOBRANTE</span>
-                    <span id="optRemFuel" style="font-size: 15px; font-weight: bold; color: #2ecc71;">0 Gal</span>
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">SOBRANTE</span><span id="optRemFuel" style="font-size: 15px; font-weight: bold; color: #2ecc71;">0 Gal</span>
                 </div>
             </div>
             <div style="background: #eef6ff; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; border: 1px solid #005a9c;"><span style="font-size: 10px; color: #005a9c; font-weight: bold; display: block;">SALIDA RECOMENDADA</span><span id="optDeparture" style="font-size: 16px; font-weight: bold; color: #d9534f;">--</span></div>
@@ -162,16 +156,11 @@
             <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
                 <thead><tr style="background:#001f3f; color:white; position: sticky; top: 0;"><th>RPM</th><th>KNOTS</th><th>GPH</th><th>RANGE (NM)</th></tr></thead>
                 <tbody style="text-align:center;">
-                    <tr><td>800</td><td>8.0</td><td>5.4</td><td>1247</td></tr>
-                    <tr style="background:#f8fafc;"><td>900</td><td>9.0</td><td>7.6</td><td>997</td></tr>
-                    <tr><td>1100</td><td>10.5</td><td>12.8</td><td>690</td></tr>
-                    <tr style="background:#f8fafc;"><td>1300</td><td>12.5</td><td>20.2</td><td>521</td></tr>
-                    <tr><td>1500</td><td>15.0</td><td>32.4</td><td>389</td></tr>
-                    <tr style="background:#f8fafc;"><td>1600</td><td>18.0</td><td>38.6</td><td>392</td></tr>
-                    <tr><td>1800</td><td>22.0</td><td>57.4</td><td>322</td></tr>
-                    <tr style="background:#f8fafc;"><td>1900</td><td>24.0</td><td>66.2</td><td>305</td></tr>
-                    <tr><td>2100</td><td>26.0</td><td>94.6</td><td>231</td></tr>
-                    <tr style="background:#f8fafc;"><td>2200</td><td>29.0</td><td>104.8</td><td>233</td></tr>
+                    <tr><td>800</td><td>8.0</td><td>5.4</td><td>1247</td></tr><tr style="background:#f8fafc;"><td>900</td><td>9.0</td><td>7.6</td><td>997</td></tr>
+                    <tr><td>1100</td><td>10.5</td><td>12.8</td><td>690</td></tr><tr style="background:#f8fafc;"><td>1300</td><td>12.5</td><td>20.2</td><td>521</td></tr>
+                    <tr><td>1500</td><td>15.0</td><td>32.4</td><td>389</td></tr><tr style="background:#f8fafc;"><td>1600</td><td>18.0</td><td>38.6</td><td>392</td></tr>
+                    <tr><td>1800</td><td>22.0</td><td>57.4</td><td>322</td></tr><tr style="background:#f8fafc;"><td>1900</td><td>24.0</td><td>66.2</td><td>305</td></tr>
+                    <tr><td>2100</td><td>26.0</td><td>94.6</td><td>231</td></tr><tr style="background:#f8fafc;"><td>2200</td><td>29.0</td><td>104.8</td><td>233</td></tr>
                     <tr style="background:#eef6ff; font-weight:bold; color:#d9534f;"><td>2300</td><td>32.0</td><td>117.2</td><td>229</td></tr>
                 </tbody>
             </table>
@@ -180,28 +169,156 @@
 
     <div id="service" class="tab-content">
         <h2>Bitácora de Mantenimiento</h2>
+        
+        <div class="section-header" style="border-left-color: #27ae60; background: #e9f7ef; color: #27ae60; margin-bottom: 10px;">
+            ⏱️ Tareas Preventivas (Fairline 65)
+        </div>
+        <div id="schedulerContainer" style="max-height: 300px; overflow-y: auto; padding: 5px;">
+            </div>
+
+        <div class="section-header" style="margin-top: 20px;">Registrar Servicio Completado</div>
         <div class="engine-box">
             <label>Fecha de Servicio:</label><input type="date" id="sFecha">
             <label>Contratista / Vendor:</label><input type="text" id="sVendor" placeholder="Ej: Marina, Electromecánico...">
-            <label>Horas de Motor:</label><input type="number" id="sHoras" placeholder="Horas al momento">
-            <label>Sistema / Categoría:</label><select id="sCat"><option value="Motores">⚙️ Motores Principales</option><option value="Generador">⚡ Generador</option><option value="Fondo">🚤 Limpieza de Fondo/Zincs</option><option value="Electrónica">📡 Electrónica / Navegación</option><option value="Otros">🔧 Otros Servicios</option></select>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div><label>Horas CAT C-18:</label><input type="number" id="sHoras" placeholder="Motores"></div>
+                <div><label>Horas Generador:</label><input type="number" id="sHorasGen" placeholder="Gens"></div>
+            </div>
+
+            <label>Sistema / Categoría:</label>
+            <select id="sCat">
+                <option value="Motores">⚙️ Motores Principales (CAT)</option>
+                <option value="Generador">⚡ Generadores (Onan/Phasor)</option>
+                <option value="Fondo">🚤 Limpieza de Fondo/Zincs</option>
+                <option value="Transmision">🔩 Transmisiones ZF</option>
+                <option value="AC_WaterMaker">❄️ A/C & Water Maker</option>
+                <option value="Seguridad">🧯 Sistemas de Seguridad (Halon)</option>
+                <option value="Electrónica">📡 Electrónica / Navegación</option>
+                <option value="Otros">🔧 Otros Servicios</option>
+            </select>
+            
             <label>Descripción del Trabajo:</label><input type="text" id="sDesc" placeholder="Qué se reparó o cambió">
             <label>Costo Total ($):</label><input type="number" id="sCosto" placeholder="0.00">
             <label>Escanear Factura/Recibo:</label><input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #005a9c; cursor: pointer;">
             <button class="btn btn-blue" onclick="saveService()" id="btnService">💾 GUARDAR Y SUBIR RECIBO</button>
         </div>
-        <div class="section-header">Archivo de Mantenimiento</div>
+        
+        <div class="section-header" style="margin-top: 20px;">Archivo Histórico</div>
         <input type="text" id="searchService" placeholder="🔍 Buscar vendor, repuesto o sistema..." onkeyup="filterServices()" style="margin-bottom: 10px; font-size: 14px;">
         <div id="serviceHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;"><p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p></div>
     </div>
-    <div class="footer">Fairline Squadron 65 Yacht | 2x Caterpillar C18 1150s | 936 Gal | Fleet Command v14.0</div>
+    <div class="footer">Fairline Squadron 65 | 2x CAT C-18 | 936 Gal | Fleet Command v15.0</div>
 </div>
 
 <script>
-    // ⚠️ ATENCIÓN AQUÍ: REEMPLAZA EL ENLACE DE ABAJO CON TU ENLACE REAL DE GOOGLE
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyOo3ZXC6OEmAxOmlTV3jzbpkwNnJVrAbNXe_qeoFxLGZ76sV3dZRM4Oy4GprKkawh1/exec';
     
     let listaViajes = []; let serviceData = [];
+
+    // --- CONFIGURACIÓN DE MANTENIMIENTO PREVENTIVO ---
+    const defaultMaintenanceTasks = [
+        { id: 'cat_oil', name: 'Aceite y Filtros Motores CAT C-18', category: 'Motores', intervalMonths: 6 },
+        { id: 'cat_coolant', name: 'Coolant e Impellers CAT C-18', category: 'Motores', intervalMonths: 12 },
+        { id: 'zf_trans', name: 'Aceite Transmisiones ZF', category: 'Transmision', intervalMonths: 12 },
+        { id: 'gen_service', name: 'Aceite/Filtros Gens (Onan/Phasor)', category: 'Generador', intervalMonths: 6 },
+        { id: 'bottom_zincs', name: 'Cambio de Zincs y Fondo', category: 'Fondo', intervalMonths: 6 },
+        { id: 'ac_flush', name: 'Descaling A/C MarineAir', category: 'AC_WaterMaker', intervalMonths: 12 },
+        { id: 'watermaker_filters', name: 'Filtros Water Maker Village Marine', category: 'AC_WaterMaker', intervalMonths: 6 },
+        { id: 'fire_safety', name: 'Inspección Extintores y Halon', category: 'Seguridad', intervalMonths: 12 }
+    ];
+
+    function initScheduler() {
+        let savedTasks = JSON.parse(localStorage.getItem('fairlineSchedule'));
+        if (!savedTasks) {
+            // Asumimos que todo se hizo el 1 de Mayo de 2026
+            savedTasks = defaultMaintenanceTasks.map(t => ({ ...t, lastDone: '2026-05-01' }));
+            localStorage.setItem('fairlineSchedule', JSON.stringify(savedTasks));
+        } else {
+            // Asegurar que existan nuevas tareas si agregamos más al array por default
+            defaultMaintenanceTasks.forEach(dt => {
+                if(!savedTasks.find(st => st.id === dt.id)) {
+                    savedTasks.push({ ...dt, lastDone: '2026-05-01' });
+                }
+            });
+            localStorage.setItem('fairlineSchedule', JSON.stringify(savedTasks));
+        }
+        renderSchedule();
+    }
+
+    function renderSchedule() {
+        let tasks = JSON.parse(localStorage.getItem('fairlineSchedule')) || [];
+        const container = document.getElementById('schedulerContainer');
+        container.innerHTML = "";
+        
+        const today = new Date();
+        
+        tasks.sort((a, b) => {
+            const nextA = new Date(a.lastDone); nextA.setMonth(nextA.getMonth() + a.intervalMonths);
+            const nextB = new Date(b.lastDone); nextB.setMonth(nextB.getMonth() + b.intervalMonths);
+            return nextA - nextB;
+        });
+
+        tasks.forEach(task => {
+            let lastD = new Date(task.lastDone + "T12:00:00");
+            let nextD = new Date(task.lastDone + "T12:00:00");
+            nextD.setMonth(nextD.getMonth() + task.intervalMonths);
+            
+            const diffDays = Math.ceil((nextD - today) / (1000 * 60 * 60 * 24));
+            
+            let statusColor = "#27ae60"; // Verde
+            let statusBg = "#e9f7ef";
+            let statusText = "Al día";
+
+            if (diffDays <= 0) {
+                statusColor = "#e74c3c"; // Rojo (Vencido)
+                statusBg = "#fdedec";
+                statusText = "¡VENCIDO!";
+            } else if (diffDays <= 30) {
+                statusColor = "#e67e22"; // Naranja (Pronto)
+                statusBg = "#fdf2e9";
+                statusText = `Faltan ${diffDays} días`;
+            }
+
+            const formatOptions = { month: 'short', year: 'numeric' };
+
+            container.innerHTML += `
+                <div class="task-card" style="border-left-color: ${statusColor};">
+                    <div class="task-info">
+                        <div class="task-title">${task.name}</div>
+                        <div style="color: #666; margin-top: 2px;">Previo: ${lastD.toLocaleDateString('es-ES', formatOptions)} | Frecuencia: ${task.intervalMonths} meses</div>
+                        <div class="task-date" style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusColor};">
+                            Vence: ${nextD.toLocaleDateString('es-ES')} (${statusText})
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn-done" onclick="markTaskDone('${task.id}', '${task.name}', '${task.category}')">✔ LISTO</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function markTaskDone(taskId, taskName, category) {
+        if(confirm(`¿Deseas marcar "${taskName}" como completado hoy?`)) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            let tasks = JSON.parse(localStorage.getItem('fairlineSchedule'));
+            const taskIndex = tasks.findIndex(t => t.id === taskId);
+            
+            if(taskIndex > -1) {
+                tasks[taskIndex].lastDone = todayStr;
+                localStorage.setItem('fairlineSchedule', JSON.stringify(tasks));
+                renderSchedule();
+                
+                // Autollenar la bitácora de abajo
+                document.getElementById('sFecha').value = todayStr;
+                document.getElementById('sCat').value = category;
+                document.getElementById('sDesc').value = "Mantenimiento Preventivo: " + taskName;
+                
+                alert("✅ Fecha actualizada. Se ha pre-llenado el formulario de abajo. Por favor ingresa el Contratista y el Costo para guardarlo en tu historial oficial.");
+            }
+        }
+    }
 
     // --- MOTOR OFFLINE ---
     function getOutbox() { return JSON.parse(localStorage.getItem('fairlineOutbox')) || []; }
@@ -220,18 +337,18 @@
             catch (e) { remaining.push(outbox[i]); }
         }
         localStorage.setItem('fairlineOutbox', JSON.stringify(remaining));
-        if (remaining.length === 0) { banner.style.background = "#2ecc71"; banner.innerHTML = "✅ ¡Bitácora sincronizada al 100%!"; setTimeout(updateOfflineBanner, 3500); cargarViajes(document.getElementById('tripSelect').value); loadServiceHistory(); } 
+        if (remaining.length === 0) { banner.style.background = "#2ecc71"; banner.innerHTML = "✅ ¡Sincronizado!"; setTimeout(updateOfflineBanner, 3500); cargarViajes(document.getElementById('tripSelect').value); loadServiceHistory(); } 
         else { updateOfflineBanner(); }
     }
     window.addEventListener('online', syncOutbox);
 
-    // --- NAVEGACIÓN DE PESTAÑAS ---
+    // --- NAVEGACIÓN ---
     function switchTab(tabId, element) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         if(element) element.classList.add('active');
-        if(tabId === 'service') loadServiceHistory();
+        if(tabId === 'service') { loadServiceHistory(); renderSchedule(); }
     }
 
     // --- RANGE PRO Y SMART ROUTER ---
@@ -250,20 +367,13 @@
     }
 
     const fairlineData = [ 
-        { rpm: 800, knots: 8.0, gph: 5.4 }, 
-        { rpm: 900, knots: 9.0, gph: 7.6 }, 
-        { rpm: 1100, knots: 10.5, gph: 12.8 }, 
-        { rpm: 1300, knots: 12.5, gph: 20.2 }, 
-        { rpm: 1500, knots: 15.0, gph: 32.4 }, 
-        { rpm: 1600, knots: 18.0, gph: 38.6 }, 
-        { rpm: 1800, knots: 22.0, gph: 57.4 }, 
-        { rpm: 1900, knots: 24.0, gph: 66.2 }, 
-        { rpm: 2100, knots: 26.0, gph: 94.6 }, 
-        { rpm: 2200, knots: 29.0, gph: 104.8 }, 
-        { rpm: 2300, knots: 32.0, gph: 117.2 } 
+        { rpm: 800, knots: 8.0, gph: 5.4 }, { rpm: 900, knots: 9.0, gph: 7.6 }, { rpm: 1100, knots: 10.5, gph: 12.8 }, 
+        { rpm: 1300, knots: 12.5, gph: 20.2 }, { rpm: 1500, knots: 15.0, gph: 32.4 }, { rpm: 1600, knots: 18.0, gph: 38.6 }, 
+        { rpm: 1800, knots: 22.0, gph: 57.4 }, { rpm: 1900, knots: 24.0, gph: 66.2 }, { rpm: 2100, knots: 26.0, gph: 94.6 }, 
+        { rpm: 2200, knots: 29.0, gph: 104.8 }, { rpm: 2300, knots: 32.0, gph: 117.2 } 
     ];
 
-function calculateSmartRoute() {
+    function calculateSmartRoute() {
         const dist = parseFloat(document.getElementById('routeDist').value) || 0;
         const fuel = parseFloat(document.getElementById('routeFuel').value) || 0;
         const resPct = parseFloat(document.getElementById('routeRes').value) || 0;
@@ -287,14 +397,12 @@ function calculateSmartRoute() {
 
         if (selectedSetting) {
             const timeHours = dist / selectedSetting.knots;
-            
             const fuelConsumed = timeHours * selectedSetting.gph;
             const fuelLeft = fuel - fuelConsumed;
             const reserveAmount = fuel * (resPct / 100);
 
             document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
             document.getElementById('optRemFuel').innerText = fuelLeft.toFixed(0) + " Gal";
-            
             document.getElementById('optRemFuel').style.color = fuelLeft >= reserveAmount ? "#2ecc71" : "#e74c3c";
             
             if (isSafe) {
@@ -406,11 +514,18 @@ function calculateSmartRoute() {
                 btn.innerText = "📸 ACHICANDO FOTO..."; const file = fileInput.files[0]; filename = file.name ? file.name : "factura.jpg"; mimeType = "image/jpeg";
                 const base64Full = await compressImage(file); fileData = base64Full.split(',')[1]; 
             }
-            const payload = { type: "MANTENIMIENTO", fecha: document.getElementById('sFecha').value, vendor: document.getElementById('sVendor').value, horas: document.getElementById('sHoras').value, categoria: document.getElementById('sCat').value, desc: document.getElementById('sDesc').value, costo: parseFloat(document.getElementById('sCosto').value) || 0, filename: filename, mimeType: mimeType, fileData: fileData };
+            // Consolidar las horas de Motores y Gen para el historial
+            let hCat = document.getElementById('sHoras').value;
+            let hGen = document.getElementById('sHorasGen').value;
+            let combinedHours = `CAT: ${hCat||'--'} | Gen: ${hGen||'--'}`;
+
+            const payload = { type: "MANTENIMIENTO", fecha: document.getElementById('sFecha').value, vendor: document.getElementById('sVendor').value, horas: combinedHours, categoria: document.getElementById('sCat').value, desc: document.getElementById('sDesc').value, costo: parseFloat(document.getElementById('sCosto').value) || 0, filename: filename, mimeType: mimeType, fileData: fileData };
+            
             if(!payload.vendor || !payload.desc) { alert("⚠️ Llena Vendor y Descripción."); btn.disabled = false; return; }
             if (!navigator.onLine) { saveToOutbox(payload); alert("⚠️ Sin internet. Guardado en memoria."); } 
-            else { btn.innerText = "⏳ ENVIANDO..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Servicio guardado."); }
-            document.getElementById('sVendor').value = ""; document.getElementById('sDesc').value = ""; document.getElementById('sCosto').value = ""; document.getElementById('sFile').value = "";
+            else { btn.innerText = "⏳ ENVIANDO..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Servicio guardado en el archivo histórico."); }
+            
+            document.getElementById('sVendor').value = ""; document.getElementById('sDesc').value = ""; document.getElementById('sCosto').value = ""; document.getElementById('sFile').value = ""; document.getElementById('sHoras').value = ""; document.getElementById('sHorasGen').value = "";
             if (navigator.onLine) loadServiceHistory(); 
         } catch (e) { alert("❌ Falló: " + e.message); }
         btn.innerText = "💾 GUARDAR Y SUBIR RECIBO"; btn.disabled = false;
@@ -443,7 +558,7 @@ function calculateSmartRoute() {
         if(data.length === 0) { historyDiv.innerHTML = "<p style='text-align:center;'>El historial está vacío.</p>"; return; }
         data.forEach(s => {
             let btnHtml = (s.fileUrl && s.fileUrl !== "Sin recibo adjunto") ? `<button onclick="window.open('${s.fileUrl}', '_blank')" style="background:#2ecc71; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:8px;">📄 VER FACTURA</button>` : `<span style="font-size:11px; color:#aaa; font-style:italic;">Sin factura</span>`;
-            historyDiv.innerHTML += `<div style="background:white; padding:12px; margin-bottom:12px; border-radius:10px; border-left: 5px solid #e67e22; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; color:#004080;"><span>${s.vendor}</span><span style="color:#d9534f;">$${parseFloat(s.costo).toFixed(2)}</span></div><div style="font-size:11px; color:#666; margin-top:6px; background:#f0f7ff; padding:5px; border-radius:5px;">📅 ${s.fecha} | ⏱️ ${s.horas} hrs | ⚙️ ${s.categoria}</div><div style="font-size:13px; margin-top:8px; color:#333; font-weight:500;">${s.desc}</div><div style="text-align:right; margin-top:10px; border-top:1px solid #eee; padding-top:10px;">${btnHtml}</div></div>`;
+            historyDiv.innerHTML += `<div style="background:white; padding:12px; margin-bottom:12px; border-radius:10px; border-left: 5px solid #e67e22; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; color:#004080;"><span>${s.vendor}</span><span style="color:#d9534f;">$${parseFloat(s.costo).toFixed(2)}</span></div><div style="font-size:11px; color:#666; margin-top:6px; background:#f0f7ff; padding:5px; border-radius:5px;">📅 ${s.fecha} | ⏱️ Hrs: ${s.horas} | ⚙️ ${s.categoria}</div><div style="font-size:13px; margin-top:8px; color:#333; font-weight:500;">${s.desc}</div><div style="text-align:right; margin-top:10px; border-top:1px solid #eee; padding-top:10px;">${btnHtml}</div></div>`;
         });
     }
 
@@ -456,7 +571,7 @@ function calculateSmartRoute() {
     window.onload = function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('newTripDate').value = today; document.getElementById('fechaGasto').value = today; document.getElementById('sFecha').value = today;
-        updateOfflineBanner(); syncOutbox(); cargarViajes();
+        initScheduler(); updateOfflineBanner(); syncOutbox(); cargarViajes();
     };
 </script>
 
