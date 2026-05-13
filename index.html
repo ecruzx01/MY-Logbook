@@ -11,7 +11,7 @@
         body { font-family: 'Segoe UI', sans-serif; background: #001f3f; padding: 10px; color: #333; margin: 0; }
         .card { background: white; padding: 20px; border-radius: 20px; max-width: 450px; margin: 10px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         .tab-container { display: flex; background: #002b55; border-radius: 12px; margin-bottom: 20px; padding: 5px; gap: 5px; overflow-x: auto; }
-        .tab { flex: 1; text-align: center; padding: 10px 5px; color: white; cursor: pointer; border-radius: 8px; font-size: 10px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; min-width: 75px; }
+        .tab { flex: 1; text-align: center; padding: 10px 5px; color: white; cursor: pointer; border-radius: 8px; font-size: 10px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; min-width: 70px; }
         .tab.active { background: white; color: #001f3f; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -22,6 +22,7 @@
         .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-blue { background: #005a9c; color: white; }
         .btn-orange { background: #e67e22; color: white; margin-top: 15px; }
+        .btn-purple { background: #8e44ad; color: white; margin-top: 15px; }
         .result-box { background: #001f3f; color: white; padding: 20px; border-radius: 15px; text-align: center; margin-top: 20px; border: 2px solid #2ecc71; }
         .result-val { font-size: 32px; font-weight: bold; color: #2ecc71; display: block; }
         .engine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -46,13 +47,14 @@
 
     <div class="tab-container">
         <div class="tab active" onclick="switchTab('logbook', this)">LOGBOOK</div>
-        <div class="tab" onclick="switchTab('auditor', this)">AUDITOR</div>
-        <div class="tab" onclick="switchTab('range', this)">⚓ RANGE</div>
+        <div class="tab" onclick="switchTab('equipment', this)">📦 EQUIPO</div>
         <div class="tab" onclick="switchTab('service', this)">🛠️ SERVICE</div>
+        <div class="tab" onclick="switchTab('range', this)">⚓ RANGE</div>
+        <div class="tab" onclick="switchTab('auditor', this)">AUDITOR</div>
     </div>
 
     <div id="logbook" class="tab-content active">
-        <h2>Bitácora de Gastos</h2>
+        <h2>Bitácora de Gastos (Viajes)</h2>
         <label>Seleccionar Viaje:</label>
         <select id="tripSelect" onchange="updateTotalDisplay()"><option value="">-- Conectando... --</option></select>
         
@@ -62,7 +64,7 @@
         </div>
         <button class="btn btn-blue" onclick="createNewTrip()">🚀 CREAR EXPEDICIÓN</button>
 
-        <div class="section-header">Registro Diario</div>
+        <div class="section-header">Registro Diario (Costos Operativos)</div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div><label>Fecha Gasto:</label><input type="date" id="fechaGasto"></div>
             <div>
@@ -71,9 +73,8 @@
                     <option value="Combustible">⛽ Diesel</option>
                     <option value="Muelle">⚓ Muelle</option>
                     <option value="Groceries">🛒 Comida</option>
-                    <option value="F&B">🍽️ F&B</option>
-                    <option value="Equipamiento">📦 Equipamiento/Artículos</option>
-                    <option value="Otros">⚙️ Otros</option>
+                    <option value="F&B">🍽️ F&B (Restaurantes)</option>
+                    <option value="Otros">⚙️ Otros / Varios</option>
                 </select>
             </div>
         </div>
@@ -81,16 +82,48 @@
         <label>Monto ($):</label><input type="number" id="monto" placeholder="0.00" inputmode="decimal" style="margin-bottom: 10px;">
         <label>Escanear Recibo (Opcional):</label>
         <input type="file" id="gastoFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #e67e22; cursor: pointer; width: 100%; box-sizing: border-box; margin-bottom: 10px;">
-        <button class="btn btn-orange" id="btnGasto" onclick="addExpense()">➕ REGISTRAR PARTIDA</button>
+        <button class="btn btn-orange" id="btnGasto" onclick="addExpense()">➕ REGISTRAR GASTO</button>
 
         <div style="background: #eef6ff; padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid #004080; text-align: center;">
-            <span style="font-size:12px; font-weight:bold; color:#004080;">TOTAL ACUMULADO:</span>
+            <span style="font-size:12px; font-weight:bold; color:#004080;">TOTAL VIAJE:</span>
             <span id="displayTotal" style="font-size: 28px; font-weight: bold; color: #d9534f; display: block;">$0.00</span>
         </div>
 
-        <div class="section-header" style="margin-top: 20px;">Desglose de Gastos</div>
+        <div class="section-header" style="margin-top: 20px;">Desglose del Viaje</div>
         <div id="expenseHistory" style="max-height: 300px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;">
             <p style="text-align:center; color:#666;">Selecciona un viaje para ver sus recibos y gastos.</p>
+        </div>
+    </div>
+
+    <div id="equipment" class="tab-content">
+        <h2>Inventario y Compras</h2>
+        <div class="engine-box" style="border-top-color: #8e44ad;">
+            <label>Fecha de Compra:</label><input type="date" id="eFecha">
+            <label>Artículo / Descripción:</label><input type="text" id="eDesc" placeholder="Ej: Ancla Rocna, Cafetera Nespresso...">
+            
+            <label>Categoría:</label>
+            <select id="eCat">
+                <option value="Cubierta">⚓ Cubierta / Fondeo</option>
+                <option value="Cabina">🛋️ Interior / Cabina</option>
+                <option value="Cocina">🍽️ Cocina / Electrodomésticos</option>
+                <option value="Electrónica">📡 Electrónica / Gadgets</option>
+                <option value="Seguridad">🛟 Seguridad</option>
+                <option value="Juguetes">🏄‍♂️ Juguetes (Water toys)</option>
+                <option value="Herramientas">🛠️ Herramientas</option>
+                <option value="Otros">📦 Otros</option>
+            </select>
+            
+            <label>Tienda / Proveedor (Opcional):</label><input type="text" id="eVendor" placeholder="Ej: West Marine, Amazon...">
+            <label>Costo Total ($):</label><input type="number" id="eCosto" placeholder="0.00">
+            <label>Escanear Recibo / Factura:</label>
+            <input type="file" id="eFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #8e44ad; cursor: pointer;">
+            <button class="btn btn-purple" onclick="saveEquipment()" id="btnEquipment">💾 REGISTRAR COMPRA</button>
+        </div>
+        
+        <div class="section-header" style="margin-top: 20px; border-left-color: #8e44ad; color: #8e44ad; background: #f4ecf8;">Historial de Inversiones / Compras</div>
+        <input type="text" id="searchEquipment" placeholder="🔍 Buscar artículo, tienda o categoría..." onkeyup="filterEquipment()" style="margin-bottom: 10px; font-size: 14px;">
+        <div id="equipmentHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;">
+            <p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p>
         </div>
     </div>
 
@@ -177,14 +210,12 @@
         <div class="section-header" style="border-left-color: #27ae60; background: #e9f7ef; color: #27ae60; margin-bottom: 10px;">
             ⏱️ Tareas Preventivas de Rutina
         </div>
-        <div id="schedulerContainer" style="max-height: 250px; overflow-y: auto; padding: 5px;">
-            </div>
+        <div id="schedulerContainer" style="max-height: 250px; overflow-y: auto; padding: 5px;"></div>
 
         <div class="section-header" style="border-left-color: #8e44ad; background: #f4ecf8; color: #8e44ad; margin-bottom: 10px; margin-top: 15px;">
             ⚠️ Mantenimientos Mayores (Por Horas/Años)
         </div>
-        <div id="majorSchedulerContainer" style="max-height: 250px; overflow-y: auto; padding: 5px;">
-            </div>
+        <div id="majorSchedulerContainer" style="max-height: 250px; overflow-y: auto; padding: 5px;"></div>
 
         <div class="section-header" style="margin-top: 20px;">Registrar Servicio Completado</div>
         <div class="engine-box">
@@ -218,17 +249,16 @@
         <input type="text" id="searchService" placeholder="🔍 Buscar vendor, repuesto o sistema..." onkeyup="filterServices()" style="margin-bottom: 10px; font-size: 14px;">
         <div id="serviceHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;"><p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p></div>
     </div>
-    <div class="footer">Fairline Squadron 65 | 2x CAT C-18 ACERT | 936 Gal | Fleet Command v18.0</div>
+    <div class="footer">Fairline Squadron 65 | 2x CAT C-18 ACERT | 936 Gal | Fleet Command v19.0</div>
 </div>
 
 <script>
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyOo3ZXC6OEmAxOmlTV3jzbpkwNnJVrAbNXe_qeoFxLGZ76sV3dZRM4Oy4GprKkawh1/exec';
     
-    let listaViajes = []; let serviceData = [];
+    let listaViajes = []; let serviceData = []; let equipmentData = [];
 
     // --- CONFIGURACIÓN DE MANTENIMIENTO PREVENTIVO Y MAYOR (ACERT C-18) ---
     const defaultMaintenanceTasks = [
-        // Tareas de Rutina CAT C-18 & Bote
         { id: 'cat_250_oil', name: 'Aceite, Filtros (Aceite/Combustible) y Muestra S·O·S (CAT) [250h o 1 Año]', category: 'Motores', intervalMonths: 12, type: 'regular' },
         { id: 'cat_250_cool', name: 'Impeller, Zincs, Filtro de Aire y Breather (CAT) [250h o 1 Año]', category: 'Motores', intervalMonths: 12, type: 'regular' },
         { id: 'cat_500_valve', name: 'Malla Combustible, Ajuste de Válvulas e Inyectores (CAT) [500h]', category: 'Motores', intervalMonths: 24, type: 'regular' },
@@ -238,8 +268,6 @@
         { id: 'ac_flush', name: 'Descaling A/C MarineAir', category: 'AC_WaterMaker', intervalMonths: 12, type: 'regular' },
         { id: 'watermaker_filters', name: 'Filtros Water Maker Village Marine', category: 'AC_WaterMaker', intervalMonths: 6, type: 'regular' },
         { id: 'fire_safety', name: 'Inspección Extintores y Halon', category: 'Seguridad', intervalMonths: 12, type: 'regular' },
-        
-        // Mantenimientos Mayores
         { id: 'cat_1000_cooler', name: 'Inspección/Limpieza Aftercooler, Heat Exchanger y Turbo (CAT) [1000h o 4 Años]', category: 'Motores', intervalMonths: 48, type: 'major' },
         { id: 'cat_3000_coolant', name: 'Cambio Coolant, Termostatos, Inspección Damper y Mounts (CAT) [3000h o 6 Años]', category: 'Motores', intervalMonths: 72, type: 'major' },
         { id: 'gen_major', name: 'Servicio Mayor Gens (Heat Exchanger/Bomba)', category: 'Generador', intervalMonths: 48, type: 'major' },
@@ -248,18 +276,11 @@
 
     function initScheduler() {
         let savedTasks = JSON.parse(localStorage.getItem('fairlineSchedule')) || [];
-        
         savedTasks = savedTasks.filter(st => defaultMaintenanceTasks.find(dt => dt.id === st.id));
-
         defaultMaintenanceTasks.forEach(dt => {
             let existingTask = savedTasks.find(st => st.id === dt.id);
-            if(!existingTask) {
-                savedTasks.push({ ...dt, lastDone: '2026-05-01' });
-            } else {
-                existingTask.name = dt.name;
-                existingTask.intervalMonths = dt.intervalMonths;
-                existingTask.type = dt.type;
-            }
+            if(!existingTask) { savedTasks.push({ ...dt, lastDone: '2026-05-01' }); } 
+            else { existingTask.name = dt.name; existingTask.intervalMonths = dt.intervalMonths; existingTask.type = dt.type; }
         });
         localStorage.setItem('fairlineSchedule', JSON.stringify(savedTasks));
         renderSchedule();
@@ -267,13 +288,8 @@
 
     function renderSchedule() {
         let tasks = JSON.parse(localStorage.getItem('fairlineSchedule')) || [];
-        const regContainer = document.getElementById('schedulerContainer');
-        const majContainer = document.getElementById('majorSchedulerContainer');
-        
-        regContainer.innerHTML = "";
-        majContainer.innerHTML = "";
-        
-        const today = new Date();
+        const regContainer = document.getElementById('schedulerContainer'); const majContainer = document.getElementById('majorSchedulerContainer');
+        regContainer.innerHTML = ""; majContainer.innerHTML = ""; const today = new Date();
         
         tasks.sort((a, b) => {
             const nextA = new Date(a.lastDone); nextA.setMonth(nextA.getMonth() + a.intervalMonths);
@@ -282,25 +298,14 @@
         });
 
         tasks.forEach(task => {
-            let lastD = new Date(task.lastDone + "T12:00:00");
-            let nextD = new Date(task.lastDone + "T12:00:00");
+            let lastD = new Date(task.lastDone + "T12:00:00"); let nextD = new Date(task.lastDone + "T12:00:00");
             nextD.setMonth(nextD.getMonth() + task.intervalMonths);
-            
             const diffDays = Math.ceil((nextD - today) / (1000 * 60 * 60 * 24));
             
-            let statusColor = task.type === 'major' ? "#8e44ad" : "#27ae60"; 
-            let statusBg = task.type === 'major' ? "#f4ecf8" : "#e9f7ef";
-            let statusText = "Al día";
+            let statusColor = task.type === 'major' ? "#8e44ad" : "#27ae60"; let statusBg = task.type === 'major' ? "#f4ecf8" : "#e9f7ef"; let statusText = "Al día";
 
-            if (diffDays <= 0) {
-                statusColor = "#e74c3c"; // Rojo (Vencido)
-                statusBg = "#fdedec";
-                statusText = "¡VENCIDO!";
-            } else if (diffDays <= 30) {
-                statusColor = "#e67e22"; // Naranja (Pronto)
-                statusBg = "#fdf2e9";
-                statusText = `Faltan ${diffDays} días`;
-            }
+            if (diffDays <= 0) { statusColor = "#e74c3c"; statusBg = "#fdedec"; statusText = "¡VENCIDO!"; } 
+            else if (diffDays <= 30) { statusColor = "#e67e22"; statusBg = "#fdf2e9"; statusText = `Faltan ${diffDays} días`; }
 
             const formatOptions = { month: 'short', year: 'numeric' };
             const taskHtml = `
@@ -308,21 +313,12 @@
                     <div class="task-info">
                         <div class="task-title" style="color: ${task.type === 'major' ? '#6c3483' : '#004080'};">${task.name}</div>
                         <div style="color: #666; margin-top: 2px;">Previo: ${lastD.toLocaleDateString('es-ES', formatOptions)} | Cada: ${task.intervalMonths} meses</div>
-                        <div class="task-date" style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusColor};">
-                            Vence: ${nextD.toLocaleDateString('es-ES')} (${statusText})
-                        </div>
+                        <div class="task-date" style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusColor};">Vence: ${nextD.toLocaleDateString('es-ES')} (${statusText})</div>
                     </div>
-                    <div>
-                        <button class="btn-done" style="background: ${task.type === 'major' ? '#8e44ad' : '#27ae60'};" onclick="markTaskDone('${task.id}', '${task.name}', '${task.category}')">✔ LISTO</button>
-                    </div>
+                    <div><button class="btn-done" style="background: ${task.type === 'major' ? '#8e44ad' : '#27ae60'};" onclick="markTaskDone('${task.id}', '${task.name}', '${task.category}')">✔ LISTO</button></div>
                 </div>
             `;
-
-            if (task.type === 'major') {
-                majContainer.innerHTML += taskHtml;
-            } else {
-                regContainer.innerHTML += taskHtml;
-            }
+            if (task.type === 'major') majContainer.innerHTML += taskHtml; else regContainer.innerHTML += taskHtml;
         });
     }
 
@@ -331,17 +327,9 @@
             const todayStr = new Date().toISOString().split('T')[0];
             let tasks = JSON.parse(localStorage.getItem('fairlineSchedule'));
             const taskIndex = tasks.findIndex(t => t.id === taskId);
-            
             if(taskIndex > -1) {
-                tasks[taskIndex].lastDone = todayStr;
-                localStorage.setItem('fairlineSchedule', JSON.stringify(tasks));
-                renderSchedule();
-                
-                // Autollenar la bitácora de abajo
-                document.getElementById('sFecha').value = todayStr;
-                document.getElementById('sCat').value = category;
-                document.getElementById('sDesc').value = "Mantenimiento: " + taskName;
-                
+                tasks[taskIndex].lastDone = todayStr; localStorage.setItem('fairlineSchedule', JSON.stringify(tasks)); renderSchedule();
+                document.getElementById('sFecha').value = todayStr; document.getElementById('sCat').value = category; document.getElementById('sDesc').value = "Mantenimiento: " + taskName;
                 alert("✅ Fecha actualizada. Se ha pre-llenado el formulario de abajo. Por favor ingresa el Contratista y el Costo para guardarlo en tu historial oficial.");
             }
         }
@@ -364,7 +352,7 @@
             catch (e) { remaining.push(outbox[i]); }
         }
         localStorage.setItem('fairlineOutbox', JSON.stringify(remaining));
-        if (remaining.length === 0) { banner.style.background = "#2ecc71"; banner.innerHTML = "✅ ¡Sincronizado!"; setTimeout(updateOfflineBanner, 3500); cargarViajes(document.getElementById('tripSelect').value); loadServiceHistory(); } 
+        if (remaining.length === 0) { banner.style.background = "#2ecc71"; banner.innerHTML = "✅ ¡Sincronizado!"; setTimeout(updateOfflineBanner, 3500); cargarViajes(document.getElementById('tripSelect').value); loadServiceHistory(); loadEquipmentHistory(); } 
         else { updateOfflineBanner(); }
     }
     window.addEventListener('online', syncOutbox);
@@ -376,6 +364,7 @@
         document.getElementById(tabId).classList.add('active');
         if(element) element.classList.add('active');
         if(tabId === 'service') { loadServiceHistory(); renderSchedule(); }
+        if(tabId === 'equipment') { loadEquipmentHistory(); }
     }
 
     // --- RANGE PRO Y SMART ROUTER ---
@@ -387,8 +376,7 @@
         const knots = parseFloat(document.getElementById('knotsRange').value) || 0;
         document.getElementById('resText').innerText = `MILLAS (${reservePct}% RES)`;
         if(totalBurn > 0 && knots > 0) {
-            const usableFuel = fuel * (1 - (reservePct / 100));
-            const range = usableFuel * (knots / totalBurn);
+            const usableFuel = fuel * (1 - (reservePct / 100)); const range = usableFuel * (knots / totalBurn);
             document.getElementById('resRange').innerText = Math.floor(range);
         } else { document.getElementById('resRange').innerText = "0"; }
     }
@@ -409,24 +397,20 @@
         const speedMode = document.getElementById('routeSpeedMode').value;
         if(dist === 0 || fuel === 0) return;
 
-        const usableFuel = fuel * (1 - (resPct / 100));
-        const requiredNMPG = dist / usableFuel;
+        const usableFuel = fuel * (1 - (resPct / 100)); const requiredNMPG = dist / usableFuel;
         let selectedSetting = null; let isSafe = true;
 
         if (speedMode === "AUTO") {
             for (let i = fairlineData.length - 1; i >= 0; i--) { let actualNMPG = fairlineData[i].knots / fairlineData[i].gph; if (actualNMPG >= requiredNMPG) { selectedSetting = fairlineData[i]; break; } }
             if (!selectedSetting) isSafe = false;
         } else {
-            const targetRPM = parseInt(speedMode);
-            selectedSetting = fairlineData.find(d => d.rpm === targetRPM);
+            const targetRPM = parseInt(speedMode); selectedSetting = fairlineData.find(d => d.rpm === targetRPM);
             if (selectedSetting && (selectedSetting.knots / selectedSetting.gph) < requiredNMPG) isSafe = false;
         }
 
         if (selectedSetting) {
-            const timeHours = dist / selectedSetting.knots;
-            const fuelConsumed = timeHours * selectedSetting.gph;
-            const fuelLeft = fuel - fuelConsumed;
-            const reserveAmount = fuel * (resPct / 100);
+            const timeHours = dist / selectedSetting.knots; const fuelConsumed = timeHours * selectedSetting.gph;
+            const fuelLeft = fuel - fuelConsumed; const reserveAmount = fuel * (resPct / 100);
 
             document.getElementById('optTime').innerText = timeHours.toFixed(1) + " h";
             document.getElementById('optRemFuel').innerText = fuelLeft.toFixed(0) + " Gal";
@@ -526,10 +510,10 @@
                 localStorage.setItem('fairlineTrips', JSON.stringify(listaViajes));
             }
             if (!navigator.onLine) { saveToOutbox(payload); alert("⚠️ Sin internet. Guardado en memoria."); updateTotalDisplay(); } 
-            else { btn.innerText = "⏳ ENVIANDO A DRIVE..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Gasto registrado con éxito."); setTimeout(() => cargarViajes(name), 1500); }
+            else { btn.innerText = "⏳ ENVIANDO..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Gasto registrado."); setTimeout(() => cargarViajes(name), 1500); }
             document.getElementById('monto').value = ""; if(fileInput) fileInput.value = ""; 
         } catch (e) { alert("❌ Error: " + e.message); }
-        btn.innerText = "➕ REGISTRAR PARTIDA"; btn.disabled = false;
+        btn.innerText = "➕ REGISTRAR GASTO"; btn.disabled = false;
     }
 
     // --- MANTENIMIENTO ---
@@ -541,10 +525,8 @@
                 btn.innerText = "📸 ACHICANDO FOTO..."; const file = fileInput.files[0]; filename = file.name ? file.name : "factura.jpg"; mimeType = "image/jpeg";
                 const base64Full = await compressImage(file); fileData = base64Full.split(',')[1]; 
             }
-            let hCat = document.getElementById('sHoras').value;
-            let hGen = document.getElementById('sHorasGen').value;
+            let hCat = document.getElementById('sHoras').value; let hGen = document.getElementById('sHorasGen').value;
             let combinedHours = `CAT: ${hCat||'--'} | Gen: ${hGen||'--'}`;
-
             const payload = { type: "MANTENIMIENTO", fecha: document.getElementById('sFecha').value, vendor: document.getElementById('sVendor').value, horas: combinedHours, categoria: document.getElementById('sCat').value, desc: document.getElementById('sDesc').value, costo: parseFloat(document.getElementById('sCosto').value) || 0, filename: filename, mimeType: mimeType, fileData: fileData };
             
             if(!payload.vendor || !payload.desc) { alert("⚠️ Llena Vendor y Descripción."); btn.disabled = false; return; }
@@ -555,22 +537,6 @@
             if (navigator.onLine) loadServiceHistory(); 
         } catch (e) { alert("❌ Falló: " + e.message); }
         btn.innerText = "💾 GUARDAR Y SUBIR RECIBO"; btn.disabled = false;
-    }
-
-    function compressImage(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image(); img.onload = function() {
-                    try {
-                        const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; let width = img.width, height = img.height;
-                        if (width > MAX_WIDTH) { height = Math.round(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
-                        canvas.width = width; canvas.height = height;
-                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.4)); 
-                    } catch (err) { reject(new Error("Fallo al achicar.")); }
-                }; img.onerror = function() { reject(new Error("Foto corrupta.")); }; img.src = event.target.result;
-            }; reader.onerror = function() { reject(new Error("No se pudo leer.")); }; reader.readAsDataURL(file);
-        });
     }
 
     async function loadServiceHistory() {
@@ -594,9 +560,67 @@
         renderServices(filtered);
     }
 
+    // --- COMPRAS / EQUIPAMIENTO ---
+    async function saveEquipment() {
+        const btn = document.getElementById('btnEquipment'); btn.innerText = "⏳ PROCESANDO..."; btn.disabled = true;
+        const fileInput = document.getElementById('eFile'); let fileData = "", mimeType = "", filename = "";
+        try {
+            if (fileInput.files.length > 0) {
+                btn.innerText = "📸 ACHICANDO FOTO..."; const file = fileInput.files[0]; filename = file.name ? file.name : "recibo_compra.jpg"; mimeType = "image/jpeg";
+                const base64Full = await compressImage(file); fileData = base64Full.split(',')[1]; 
+            }
+            const payload = { type: "EQUIPAMIENTO", fecha: document.getElementById('eFecha').value, vendor: document.getElementById('eVendor').value, categoria: document.getElementById('eCat').value, desc: document.getElementById('eDesc').value, costo: parseFloat(document.getElementById('eCosto').value) || 0, filename: filename, mimeType: mimeType, fileData: fileData };
+            
+            if(!payload.desc) { alert("⚠️ Llena la Descripción del artículo."); btn.disabled = false; return; }
+            if (!navigator.onLine) { saveToOutbox(payload); alert("⚠️ Sin internet. Guardado en memoria."); } 
+            else { btn.innerText = "⏳ ENVIANDO..."; await fetch(scriptURL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); alert("✅ Compra guardada."); }
+            
+            document.getElementById('eVendor').value = ""; document.getElementById('eDesc').value = ""; document.getElementById('eCosto').value = ""; document.getElementById('eFile').value = "";
+            if (navigator.onLine) loadEquipmentHistory(); 
+        } catch (e) { alert("❌ Falló: " + e.message); }
+        btn.innerText = "💾 REGISTRAR COMPRA"; btn.disabled = false;
+    }
+
+    async function loadEquipmentHistory() {
+        if(!navigator.onLine) return; const historyDiv = document.getElementById('equipmentHistory'); historyDiv.innerHTML = "<p style='text-align:center;'>🔄 Buscando archivos...</p>";
+        try { const response = await fetch(scriptURL + "?action=getEquipment"); equipmentData = await response.json(); renderEquipment(equipmentData); } 
+        catch (e) { historyDiv.innerHTML = "<p style='color:red; text-align:center;'>❌ Error de conexión</p>"; }
+    }
+
+    function renderEquipment(data) {
+        const historyDiv = document.getElementById('equipmentHistory'); historyDiv.innerHTML = "";
+        if(data.length === 0) { historyDiv.innerHTML = "<p style='text-align:center;'>El historial está vacío.</p>"; return; }
+        data.forEach(e => {
+            let btnHtml = (e.fileUrl && e.fileUrl !== "Sin recibo adjunto") ? `<button onclick="window.open('${e.fileUrl}', '_blank')" style="background:#8e44ad; color:white; border:none; padding:8px 15px; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:8px;">📄 VER RECIBO</button>` : `<span style="font-size:11px; color:#aaa; font-style:italic;">Sin recibo</span>`;
+            historyDiv.innerHTML += `<div style="background:white; padding:12px; margin-bottom:12px; border-radius:10px; border-left: 5px solid #8e44ad; box-shadow: 0 4px 6px rgba(0,0,0,0.05);"><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; color:#004080;"><span>${e.desc}</span><span style="color:#d9534f;">$${parseFloat(e.costo).toFixed(2)}</span></div><div style="font-size:11px; color:#666; margin-top:6px; background:#f4ecf8; padding:5px; border-radius:5px;">📅 ${e.fecha} | 🛒 ${e.vendor || 'N/A'} | 📦 ${e.categoria}</div><div style="text-align:right; margin-top:10px; border-top:1px solid #eee; padding-top:10px;">${btnHtml}</div></div>`;
+        });
+    }
+
+    function filterEquipment() {
+        const term = document.getElementById('searchEquipment').value.toLowerCase();
+        const filtered = equipmentData.filter(e => (e.vendor && e.vendor.toLowerCase().includes(term)) || e.desc.toLowerCase().includes(term) || e.categoria.toLowerCase().includes(term));
+        renderEquipment(filtered);
+    }
+
+    function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image(); img.onload = function() {
+                    try {
+                        const canvas = document.createElement('canvas'); const MAX_WIDTH = 600; let width = img.width, height = img.height;
+                        if (width > MAX_WIDTH) { height = Math.round(height * (MAX_WIDTH / width)); width = MAX_WIDTH; }
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height); resolve(canvas.toDataURL('image/jpeg', 0.4)); 
+                    } catch (err) { reject(new Error("Fallo al achicar.")); }
+                }; img.onerror = function() { reject(new Error("Foto corrupta.")); }; img.src = event.target.result;
+            }; reader.onerror = function() { reject(new Error("No se pudo leer.")); }; reader.readAsDataURL(file);
+        });
+    }
+
     window.onload = function() {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('newTripDate').value = today; document.getElementById('fechaGasto').value = today; document.getElementById('sFecha').value = today;
+        document.getElementById('newTripDate').value = today; document.getElementById('fechaGasto').value = today; document.getElementById('sFecha').value = today; document.getElementById('eFecha').value = today;
         initScheduler(); updateOfflineBanner(); syncOutbox(); cargarViajes();
     };
 </script>
