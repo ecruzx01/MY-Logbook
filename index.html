@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#001f3f">
+    <link rel="manifest" href="manifest.json">
+    <title>Fairline 65 - Fleet Command</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #001f3f; padding: 10px; color: #333; margin: 0; }
+        .card { background: white; padding: 20px; border-radius: 20px; max-width: 450px; margin: 10px auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        .tab-container { display: flex; background: #002b55; border-radius: 12px; margin-bottom: 20px; padding: 5px; gap: 5px; overflow-x: auto; }
+        .tab { flex: 1; text-align: center; padding: 10px 5px; color: white; cursor: pointer; border-radius: 8px; font-size: 10px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; min-width: 75px; }
+        .tab.active { background: white; color: #001f3f; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        h2 { color: #004080; text-align: center; margin-bottom: 15px; font-size: 18px; text-transform: uppercase; }
+        .section-header { color: #005a9c; font-weight: bold; margin-top: 15px; font-size: 14px; border-left: 5px solid #005a9c; padding: 6px 10px; background: #f0f7ff; }
+        label { display: block; margin-top: 10px; font-weight: 600; font-size: 11px; color: #666; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; font-weight: bold; }
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-blue { background: #005a9c; color: white; }
+        .btn-orange { background: #e67e22; color: white; margin-top: 15px; }
+        .result-box { background: #001f3f; color: white; padding: 20px; border-radius: 15px; text-align: center; margin-top: 20px; border: 2px solid #2ecc71; }
+        .result-val { font-size: 32px; font-weight: bold; color: #2ecc71; display: block; }
+        .engine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .engine-box { background: #f8fafc; padding: 12px; border-radius: 15px; border-top: 4px solid #004080; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background: #001f3f; color: white; }
+        .footer { font-size: 10px; color: #aaa; text-align: center; margin-top: 20px; }
+        .task-card { background: white; padding: 12px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #ccc; }
+        .task-info { font-size: 12px; }
+        .task-title { font-weight: bold; color: #004080; font-size: 13px; line-height: 1.2; margin-bottom: 3px; }
+        .task-date { font-weight: bold; margin-top: 3px; display: inline-block; padding: 3px 6px; border-radius: 5px; font-size: 11px; }
+        .btn-done { background: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 11px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div id="offlineBanner" style="display:none; background:#f39c12; color:white; text-align:center; padding:10px; font-weight:bold; font-size:12px; border-radius:12px; margin-bottom:15px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+        ⏳ <span id="pendingCount">0</span> RECIBOS EN ESPERA. Se subirán al recuperar señal.
+    </div>
+
+    <div class="tab-container">
+        <div class="tab active" onclick="switchTab('logbook', this)">LOGBOOK</div>
+        <div class="tab" onclick="switchTab('auditor', this)">AUDITOR</div>
+        <div class="tab" onclick="switchTab('range', this)">⚓ RANGE</div>
+        <div class="tab" onclick="switchTab('service', this)">🛠️ SERVICE</div>
+    </div>
+
+    <div id="logbook" class="tab-content active">
+        <h2>Bitácora de Gastos</h2>
+        <label>Seleccionar Viaje:</label>
+        <select id="tripSelect" onchange="updateTotalDisplay()"><option value="">-- Conectando... --</option></select>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label>Nuevo Destino:</label><input type="text" id="newTripDest" placeholder="Ej: Culebra"></div>
+            <div><label>Fecha Salida:</label><input type="date" id="newTripDate"></div>
+        </div>
+        <button class="btn btn-blue" onclick="createNewTrip()">🚀 CREAR EXPEDICIÓN</button>
+
+        <div class="section-header">Registro Diario</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label>Fecha Gasto:</label><input type="date" id="fechaGasto"></div>
+            <div>
+                <label>Categoría:</label>
+                <select id="cat">
+                    <option value="Combustible">⛽ Diesel</option>
+                    <option value="Muelle">⚓ Muelle</option>
+                    <option value="Groceries">🛒 Comida</option>
+                    <option value="F&B">🍽️ F&B</option>
+                    <option value="Equipamiento">📦 Equipamiento/Artículos</option>
+                    <option value="Otros">⚙️ Otros</option>
+                </select>
+            </div>
+        </div>
+        
+        <label>Monto ($):</label><input type="number" id="monto" placeholder="0.00" inputmode="decimal" style="margin-bottom: 10px;">
+        <label>Escanear Recibo (Opcional):</label>
+        <input type="file" id="gastoFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #e67e22; cursor: pointer; width: 100%; box-sizing: border-box; margin-bottom: 10px;">
+        <button class="btn btn-orange" id="btnGasto" onclick="addExpense()">➕ REGISTRAR PARTIDA</button>
+
+        <div style="background: #eef6ff; padding: 15px; border-radius: 15px; margin-top: 20px; border: 2px solid #004080; text-align: center;">
+            <span style="font-size:12px; font-weight:bold; color:#004080;">TOTAL ACUMULADO:</span>
+            <span id="displayTotal" style="font-size: 28px; font-weight: bold; color: #d9534f; display: block;">$0.00</span>
+        </div>
+
+        <div class="section-header" style="margin-top: 20px;">Desglose de Gastos</div>
+        <div id="expenseHistory" style="max-height: 300px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;">
+            <p style="text-align:center; color:#666;">Selecciona un viaje para ver sus recibos y gastos.</p>
+        </div>
+    </div>
+
+    <div id="auditor" class="tab-content">
+        <h2>Confirmar Consumo</h2>
+        <p style="text-align:center; font-size:12px; color:#666;">Basado en 57.4 GPH (1800 RPM)</p>
+        <label>Galones Consumidos:</label><input type="number" id="galReal" oninput="calcFuel()">
+        <label>Horas de Motor:</label><input type="number" id="hrsReal" oninput="calcFuel()">
+        <div class="result-box"><span id="resGPH" class="result-val">0.0</span><span style="font-size: 16px;">GPH (Combinado)</span><div id="fuelStatus" style="margin-top:10px; font-size:13px; font-weight:bold;"></div></div>
+    </div>
+
+    <div id="range" class="tab-content">
+        <h2>Safe Range Pro</h2>
+        
+        <div class="section-header">1. Rango Actual (En Vivo)</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div><label>Diesel (Gal):</label><input type="number" id="fuelRange" placeholder="Max: 936" oninput="calculateRange()"></div>
+            <div><label>Reserva (%):</label><input type="number" id="reservePct" value="10" oninput="calculateRange()"></div>
+        </div>
+        <div class="engine-grid">
+            <div class="engine-box"><span style="font-size:9px; font-weight:bold; color:#004080; display:block; text-align:center;">PORT (MASTER)</span><label>RPM:</label><input type="number" id="rpmP" oninput="syncRPM()"><label>GPH:</label><input type="number" id="gphP" oninput="calculateRange()"></div>
+            <div class="engine-box" style="border-top-color: #ef4444;"><span style="font-size:9px; font-weight:bold; color:#ef4444; display:block; text-align:center;">STBD</span><label>RPM:</label><input type="number" id="rpmS" oninput="calculateRange()"><label>GPH:</label><input type="number" id="gphS" oninput="calculateRange()"></div>
+        </div>
+        <label>Velocidad GPS (Kts):</label><input type="number" id="knotsRange" oninput="calculateRange()">
+        <div class="result-box"><span id="resRange" class="result-val" style="font-size:42px;">0</span><span id="resText" style="font-size: 14px; font-weight: bold;">MILLAS (10% RES)</span></div>
+
+        <div class="section-header" style="margin-top: 20px; border-left-color: #e67e22; color: #e67e22; background: #fff3e0;">2. Smart Router (Optimizador)</div>
+        <div style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-top: 10px; border: 2px solid #e67e22;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px;">
+                <div><label style="font-size: 9px;">DISTANCIA (NM)</label><input type="number" id="routeDist" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+                <div><label style="font-size: 9px;">DIESEL DISP.</label><input type="number" id="routeFuel" value="936" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+                <div><label style="font-size: 9px;">RESERVA (%)</label><input type="number" id="routeRes" value="20" oninput="calculateSmartRoute()" style="font-size: 14px; padding: 8px;"></div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px;">
+                <div><label style="font-size: 9px;">FECHA LLEGADA</label><input type="date" id="routeArrDate" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;"></div>
+                <div><label style="font-size: 9px;">HORA LLEGADA</label><input type="time" id="routeArrTime" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;"></div>
+                <div>
+                    <label style="font-size: 9px;">VELOCIDAD (RPM)</label>
+                    <select id="routeSpeedMode" onchange="calculateSmartRoute()" style="font-size: 12px; padding: 8px;">
+                        <option value="AUTO">🌟 Auto</option>
+                        <option value="800">800 RPM</option><option value="900">900 RPM</option><option value="1100">1100 RPM</option>
+                        <option value="1300">1300 RPM</option><option value="1500">1500 RPM</option><option value="1600">1600 RPM</option>
+                        <option value="1800">1800 RPM</option><option value="1900">1900 RPM</option><option value="2100">2100 RPM</option>
+                        <option value="2200">2200 RPM</option><option value="2300">2300 RPM</option>
+                    </select>
+                </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-top: 15px; text-align: center;">
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">RPM CRUCERO</span><span id="optRPM" style="font-size: 15px; font-weight: bold; color: #004080;">0</span>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">VELOCIDAD</span><span id="optKnots" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 Kt</span>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">TIEMPO EST.</span><span id="optTime" style="font-size: 15px; font-weight: bold; color: #004080;">0.0 h</span>
+                </div>
+                <div style="background: #f8fafc; padding: 8px 2px; border-radius: 8px;">
+                    <span style="font-size: 9px; color: #666; font-weight: bold; display: block;">SOBRANTE</span><span id="optRemFuel" style="font-size: 15px; font-weight: bold; color: #2ecc71;">0 Gal</span>
+                </div>
+            </div>
+            <div style="background: #eef6ff; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; border: 1px solid #005a9c;"><span style="font-size: 10px; color: #005a9c; font-weight: bold; display: block;">SALIDA RECOMENDADA</span><span id="optDeparture" style="font-size: 16px; font-weight: bold; color: #d9534f;">--</span></div>
+        </div>
+
+        <div class="section-header" style="margin-top: 20px;">Performance Oficial Fairline 65</div>
+        <div style="background: white; border-radius: 10px; padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 10px; max-height: 250px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                <thead><tr style="background:#001f3f; color:white; position: sticky; top: 0;"><th>RPM</th><th>KNOTS</th><th>GPH</th><th>RANGE (NM)</th></tr></thead>
+                <tbody style="text-align:center;">
+                    <tr><td>800</td><td>8.0</td><td>5.4</td><td>1247</td></tr><tr style="background:#f8fafc;"><td>900</td><td>9.0</td><td>7.6</td><td>997</td></tr>
+                    <tr><td>1100</td><td>10.5</td><td>12.8</td><td>690</td></tr><tr style="background:#f8fafc;"><td>1300</td><td>12.5</td><td>20.2</td><td>521</td></tr>
+                    <tr><td>1500</td><td>15.0</td><td>32.4</td><td>389</td></tr><tr style="background:#f8fafc;"><td>1600</td><td>18.0</td><td>38.6</td><td>392</td></tr>
+                    <tr><td>1800</td><td>22.0</td><td>57.4</td><td>322</td></tr><tr style="background:#f8fafc;"><td>1900</td><td>24.0</td><td>66.2</td><td>305</td></tr>
+                    <tr><td>2100</td><td>26.0</td><td>94.6</td><td>231</td></tr><tr style="background:#f8fafc;"><td>2200</td><td>29.0</td><td>104.8</td><td>233</td></tr>
+                    <tr style="background:#eef6ff; font-weight:bold; color:#d9534f;"><td>2300</td><td>32.0</td><td>117.2</td><td>229</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="service" class="tab-content">
+        <h2>Bitácora de Mantenimiento</h2>
+        
+        <div class="section-header" style="border-left-color: #27ae60; background: #e9f7ef; color: #27ae60; margin-bottom: 10px;">
+            ⏱️ Tareas Preventivas de Rutina
+        </div>
+        <div id="schedulerContainer" style="max-height: 250px; overflow-y: auto; padding: 5px;">
+            </div>
+
+        <div class="section-header" style="border-left-color: #8e44ad; background: #f4ecf8; color: #8e44ad; margin-bottom: 10px; margin-top: 15px;">
+            ⚠️ Mantenimientos Mayores (Por Horas/Años)
+        </div>
+        <div id="majorSchedulerContainer" style="max-height: 250px; overflow-y: auto; padding: 5px;">
+            </div>
+
+        <div class="section-header" style="margin-top: 20px;">Registrar Servicio Completado</div>
+        <div class="engine-box">
+            <label>Fecha de Servicio:</label><input type="date" id="sFecha">
+            <label>Contratista / Vendor:</label><input type="text" id="sVendor" placeholder="Ej: Marina, Electromecánico...">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div><label>Horas CAT C-18:</label><input type="number" id="sHoras" placeholder="Motores"></div>
+                <div><label>Horas Generador:</label><input type="number" id="sHorasGen" placeholder="Gens"></div>
+            </div>
+
+            <label>Sistema / Categoría:</label>
+            <select id="sCat">
+                <option value="Motores">⚙️ Motores Principales (CAT)</option>
+                <option value="Generador">⚡ Generadores (Onan/Phasor)</option>
+                <option value="Fondo">🚤 Limpieza de Fondo/Zincs</option>
+                <option value="Transmision">🔩 Transmisiones ZF</option>
+                <option value="AC_WaterMaker">❄️ A/C & Water Maker</option>
+                <option value="Seguridad">🧯 Sistemas de Seguridad (Halon)</option>
+                <option value="Electrónica">📡 Electrónica / Navegación</option>
+                <option value="Otros">🔧 Otros Servicios</option>
+            </select>
+            
+            <label>Descripción del Trabajo:</label><input type="text" id="sDesc" placeholder="Qué se reparó o cambió">
+            <label>Costo Total ($):</label><input type="number" id="sCosto" placeholder="0.00">
+            <label>Escanear Factura/Recibo:</label><input type="file" id="sFile" accept="image/*,application/pdf" capture="environment" style="background: white; font-size: 12px; padding: 10px; border: 2px dashed #005a9c; cursor: pointer;">
+            <button class="btn btn-blue" onclick="saveService()" id="btnService">💾 GUARDAR Y SUBIR RECIBO</button>
+        </div>
+        
+        <div class="section-header" style="margin-top: 20px;">Archivo Histórico</div>
+        <input type="text" id="searchService" placeholder="🔍 Buscar vendor, repuesto o sistema..." onkeyup="filterServices()" style="margin-bottom: 10px; font-size: 14px;">
+        <div id="serviceHistory" style="max-height: 350px; overflow-y: auto; font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 10px;"><p style="text-align:center; color:#666;">El historial aparecerá aquí tras sincronizar.</p></div>
+    </div>
+    <div class="footer">Fairline Squadron 65 | 2x CAT C-18 ACERT | 936 Gal | Fleet Command v18.0</div>
+</div>
+
+<script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyOo3ZXC6OEmAxOmlTV3jzbpkwNnJVrAbNXe_qeoFxLGZ76sV3dZRM4Oy4GprKkawh1/exec';
+    
+    let listaViajes = []; let serviceData = [];
+
+    // --- CONFIGURACIÓN DE MANTENIMIENTO PREVENTIVO Y MAYOR (ACERT C-18) ---
+    const defaultMaintenanceTasks = [
+        // Tareas de Rutina CAT C-18 & Bote
+        { id: 'cat_250_oil', name: 'Aceite, Filtros (Aceite/Combustible) y Muestra S·O·S (CAT) [250h o 1 Año]', category: 'Motores', intervalMonths: 12, type: 'regular' },
+        { id: 'cat_250_cool', name: 'Impeller, Zincs, Filtro de Aire y Breather (CAT) [250h o 1 Año]', category: 'Motores', intervalMonths: 12, type: 'regular' },
+        { id: 'cat_500_valve', name: 'Malla Combustible, Ajuste de Válvulas e Inyectores (CAT) [500h]', category: 'Motores', intervalMonths: 24, type: 'regular' },
+        { id: 'zf_trans', name: 'Aceite Transmisiones ZF', category: 'Transmision', intervalMonths: 12, type: 'regular' },
+        { id: 'gen_service', name: 'Aceite/Filtros Gens (Onan/Phasor)', category: 'Generador', intervalMonths: 6, type: 'regular' },
+        { id: 'bottom_zincs', name: 'Cambio de Zincs y Fondo', category: 'Fondo', intervalMonths: 6, type: 'regular' },
+        { id: 'ac_flush', name: 'Descaling A/C MarineAir', category: 'AC_WaterMaker', intervalMonths: 12, type: 'regular' },
+        { id: 'watermaker_filters', name: 'Filtros Water Maker Village Marine', category: 'AC_WaterMaker', intervalMonths: 6, type: 'regular' },
+        { id: 'fire_safety', name: 'Inspección Extintores y Halon', category: 'Seguridad', intervalMonths: 12, type: 'regular' },
+        
+        // Mantenimientos Mayores
+        { id: 'cat_1000_cooler', name: 'Inspección/Limpieza
